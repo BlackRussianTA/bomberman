@@ -24,9 +24,15 @@ function game() {
                 };
 
             var helpers = {
-                getIndexOf: function (elems, row, col) {
-                    var elem;
-                    elems.forEach();
+                getIndexOf: function (elems, row, column) {
+                    var index = -1;
+                    elems.forEach(function(elem, i){
+                        if(elem.row === row && elem.column === column){
+                            index = i;
+                            return true;
+                        }
+                    });
+                    return index;
                 },
                 getRandomInt: function (min, max) {
                     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -392,11 +398,19 @@ function game() {
                                     that.endTime = Math.floor(Date.now() / 1000);
                                     alert('Level Completed');
                                     that.timeCompleted = that.endTime - that.startTime;
+                                    that.points += that.timeCompleted/2;
                                     console.log('complete for ' + that.timeCompleted + ' seconds ');
+                                    console.log('points: ' + that.points);
+
                                     break;
                                 case 'c':
                                     that.points += 10;
-                                    that
+                                    var index = helpers.getIndexOf(that.coins,cur[0],cur[1]);
+                                    var coin = that.coins[index];
+                                    coin.object.remove();
+                                    that.coin_layer.draw();
+                                    that.coins.splice(index, 1);
+
                                 default:
                                     that.grid[cur[0]][cur[1]] = 'p';
                             }
@@ -442,7 +456,9 @@ function game() {
                             console.log('game over');
                             this.endTime = Math.floor(Date.now() / 1000);
                             this.timeCompleted = this.endTime - this.startTime;
+                            this.points += this.timeCompleted/2;
                             console.log('complete for ' + this.timeCompleted + ' seconds ');
+                            console.log('points ' + this.points);
                             this.player_layer.draw();
                         } else {
                             this.player.row = 0;
@@ -451,7 +467,6 @@ function game() {
                             this.player.object.setY(0);
                             this.player_layer.draw();
                             this.grid[0][0] = 'p';
-                            console.log(this.grid);
                         }
                     }
                 });
