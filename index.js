@@ -2,7 +2,7 @@
 function game() {
     var module = (function () {
         var player,
-            stone,
+        stone,
             path,
             enemy,
             gate,
@@ -478,6 +478,7 @@ var gameSet = [
     ['=', 'e', '+', '+', '=', '+', '+', 'e', 'g']
 ];
 window.onload = function () {
+
 
     var game = module.getGame(gameSet);
     setInterval(function(){
