@@ -8,6 +8,7 @@ function game() {
             gate,
             bomb,
             game,
+            coin,
             CONSTANTS = {
                 DIV_ID: 'kinetic-canvas',
                 BOX_WIDTH: 64,
@@ -15,6 +16,7 @@ function game() {
                 GATE_IMG_SRC: 'images/gate.png',
                 PLAYER_IMG_SRC: 'images/player_walk2.png',
                 ENEMY_IMG_SRC: 'images/mouse.png',
+                COIN_IMG_SRC: 'images/coin.png',
                 PATH_IMG_SRC: 'images/grass.png',
                 STONE_IMG_SRC: 'images/stone.png',
                 BOMB_IMG_SRC: 'images/bomb.png'
@@ -65,6 +67,14 @@ function game() {
                                     g.stone_layer.add(newStone.object);
                                 },60);
                                 g.stones.push(newStone);
+                                break;
+                            case 'c':
+                                var newPath = Object.create(path).init([c, r]);
+                                g.path_layer.add(newPath.object);
+                                g.paths.push(newPath);
+                                var newCoin = Object.create(coin).init([c, r]);
+                                g.coin_layer.add(newCoin.object);
+                                g.coins.push(newCoin);
                                 break;
                             case 'p':
                                 var newPath = Object.create(path).init([c, r]);
@@ -166,7 +176,7 @@ function game() {
                         break;
                 }
                 return cur;
-            },
+            }
         };
         player = (function () {
             player = Object.create({});
@@ -251,6 +261,21 @@ function game() {
             });
             return stone;
         }());
+
+        coin = (function () {
+            var currentId = 0,
+                coin = Object.create({});
+            Object.defineProperty(coin, 'init', {
+                value: function (position) {
+                    this.object = helpers.createImageObject(position, CONSTANTS.COIN_IMG_SRC);
+                    this.id = ++currentId;
+                    this.row = position[1];
+                    this.column = position[0];
+                    return this;
+                }
+            });
+            return coin;
+        }());
         bomb = (function () {
             var currentId = 0,
                 bomb = Object.create({});
@@ -274,6 +299,7 @@ function game() {
                     this.endTime = -1;
                     this.timeCompleted = 0;
                     this.lives = 3;
+                    this.points = 0;
                     this.stage = helpers.createStage(grid);
                     this.player_layer = new Kinetic.Layer();
                     this.enemies_layer = new Kinetic.Layer();
@@ -281,6 +307,8 @@ function game() {
                     this.stone_layer = new Kinetic.Layer();
                     this.gate_layer = new Kinetic.Layer();
                     this.bomb_layer=new Kinetic.Layer();
+                    this.coin_layer=new Kinetic.Layer();
+                    this.coins= [];
                     this.paths = [];
                     this.stones = [];
                     this.enemies = [];
@@ -307,6 +335,10 @@ function game() {
                         that.stage.add(that.bomb_layer);
                     }, 60);
 
+                    setTimeout(function () {
+                        that.stage.add(that.coin_layer);
+                    }, 60);
+
                     return this;
                 }
             });
@@ -322,7 +354,23 @@ function game() {
                         // new row and column position of the player
                         var cur = helpers.movePlayer(direction, this.player, this.grid);
                         this.player_layer.draw();
+                        var that = this;
                         // update the grid matrix values
+                        switch(that.grid[cur[0]][cur[1]]){
+                            case 'e':
+                                that.remove_life();
+                                that.grid[cur[0]][cur[1]] = 'b';
+                                that.bomb_layer.draw();
+                                break;
+                            case 'g':
+                                that.endTime = Math.floor(Date.now() / 1000);
+                                alert('Level Completed');
+                                that.timeCompleted = that.endTime - that.startTime;
+                                console.log('complete for '+ that.timeCompleted + ' seconds ');
+                                break;
+                            default:
+                                that.grid[cur[0]][cur[1]] = 'p';
+                        }
                         if (this.grid[cur[0]][cur[1]] == 'e') {
                             this.remove_life();
                             //------------------------------------------------------------------------------------------------------------------
@@ -372,7 +420,7 @@ function game() {
                     this.lives -= 1;
                     console.log('remaining lives: ' + this.lives);
                     if(this.lives < 0){
-                        this.player_layer.remove(player.object);
+                        this.player_layer.remove(this.player.object);
                         console.log('game over');
                         this.endTime = Math.floor(Date.now() / 1000);
                         this.timeCompleted = this.endTime - this.startTime;
@@ -422,11 +470,11 @@ var module = game();
 
 var gameSet = [
     ['p', '=', '+', '+', '=', '+', '+', '=', '='],
-    ['+', '=', '+', '+', '=', '+', '+', '=', '+'],
+    ['+', '=', '+', '+', 'c', '+', '+', '=', '+'],
     ['+', '=', '=', '=', '=', '+', '+', '=', 'b'],
     ['=', '=', '+', '=', '=', '=', '=', '=', '+'],
-    ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
-    ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
+    ['=', '=', '+', '+', '=', '+', '+', 'c', '+'],
+    ['c', '=', '+', '+', '=', '+', '+', '=', '+'],
     ['=', 'e', '+', '+', '=', '+', '+', 'e', 'g']
 ];
 window.onload = function () {
