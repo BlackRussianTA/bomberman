@@ -372,12 +372,11 @@ function game() {
             });
             Object.defineProperty(game, 'put_bomb', {
                 value: function () {
-                    var that = this;
-                    var positionOfBomb = [that.player.column, that.player.row];
+                    var positionOfBomb = [this.player.column, this.player.row];
                     var newBomb=Object.create(bomb).init(positionOfBomb);
-                    that.bomb_layer.add(newBomb.object);
-                    that.bomb=newBomb;
-                    that.bomb_layer.draw();
+                    this.bomb_layer.add(newBomb.object);
+                    this.bomb=newBomb;
+                    this.bomb_layer.draw();
                     //this.grid[positionOfBomb[0]][positionOfBomb[1]]='b';
 
                     for(var i=0;i<this.grid.length;i+=1){
@@ -411,6 +410,8 @@ var gameSet = [
     ['=', 'e', '+', '+', '=', '+', '+', 'e', 'g']
 ];
 window.onload = function () {
+
+
     var game = module.getGame(gameSet);
     setInterval(function(){
         game.enemy_move();
@@ -425,7 +426,7 @@ window.onload = function () {
             game.player_move('right');
         } else if (ev.keyCode === 40  || ev.keyCode === 83) {
             game.player_move('down');
-        }else if (ev.keyCode === 32 ) {
+        }else if (ev.keyCode === 32) {
             game.put_bomb();
         }
     };
