@@ -295,8 +295,24 @@ function game() {
                 });
                 return bomb;
             }());
+            fire = (function () {
+                var currentId = 0,
+                    fire = Object.create({});
+                Object.defineProperty(fire, 'init', {
+                    value: function (position) {
+                        this.object = helpers.createImageObject(position, CONSTANTS.FIRE_IMG_SRC);
+                        this.id = ++currentId;
+                        this.row = position[1];
+                        this.column = position[0];
+                        return this;
+                    }
+                });
+                return fire;
+            }());
             game = (function () {
                 game = Object.create({});
+
+
                 Object.defineProperty(game, 'init', {
                     value: function (grid) {
                         this.grid = grid;
@@ -311,13 +327,15 @@ function game() {
                         this.path_layer = new Kinetic.Layer();
                         this.stone_layer = new Kinetic.Layer();
                         this.gate_layer = new Kinetic.Layer();
-                        this.bomb_layer=new Kinetic.Layer();
-                        this.coin_layer=new Kinetic.Layer();
-                        this.coins= [];
+                        this.bomb_layer = new Kinetic.Layer();
+                        this.coin_layer = new Kinetic.Layer();
+                        this.fire_layer = new Kinetic.Layer();
+                        this.coins = [];
                         this.paths = [];
                         this.stones = [];
                         this.enemies = [];
                         this.bombs = [];
+                        this.fires = [];
                         var that = this;
                         helpers.buildGrid(this, grid);
                         // wait the images to be loaded
@@ -326,7 +344,9 @@ function game() {
                         setTimeout(function () {
                             that.stage.add(that.path_layer);
                         }, 60);
-
+                        setTimeout(function () {
+                            that.stage.add(that.fire_layer);
+                        }, 60);
                         setTimeout(function () {
                             that.stage.add(that.stone_layer);
                         }, 60);
@@ -343,6 +363,7 @@ function game() {
                         setTimeout(function () {
                             that.stage.add(that.coin_layer);
                         }, 60);
+
 
                         return this;
                     }
@@ -361,7 +382,7 @@ function game() {
                             this.player_layer.draw();
                             var that = this;
                             // update the grid matrix values
-                            switch(that.grid[cur[0]][cur[1]]){
+                            switch (that.grid[cur[0]][cur[1]]) {
                                 case 'e':
                                     that.remove_life();
                                     that.grid[cur[0]][cur[1]] = 'b';
@@ -371,7 +392,7 @@ function game() {
                                     that.endTime = Math.floor(Date.now() / 1000);
                                     alert('Level Completed');
                                     that.timeCompleted = that.endTime - that.startTime;
-                                    console.log('complete for '+ that.timeCompleted + ' seconds ');
+                                    console.log('complete for ' + that.timeCompleted + ' seconds ');
                                     break;
                                 case 'c':
                                     that.points += 10;
@@ -379,7 +400,7 @@ function game() {
                                 default:
                                     that.grid[cur[0]][cur[1]] = 'p';
                             }
-                            
+
                             if (this.grid[prev[0]][prev[1]] == 'p') {
                                 this.grid[prev[0]][prev[1]] = '=';
                             }
@@ -416,12 +437,12 @@ function game() {
                     value: function () {
                         this.lives -= 1;
                         console.log('remaining lives: ' + this.lives);
-                        if(this.lives < 0){
+                        if (this.lives < 0) {
                             this.player_layer.remove(this.player.object);
                             console.log('game over');
                             this.endTime = Math.floor(Date.now() / 1000);
                             this.timeCompleted = this.endTime - this.startTime;
-                            console.log('complete for '+ this.timeCompleted + ' seconds ');
+                            console.log('complete for ' + this.timeCompleted + ' seconds ');
                             this.player_layer.draw();
                         } else {
                             this.player.row = 0;
@@ -447,12 +468,16 @@ function game() {
                         //console.log(this.bomb_layer);
 
                         setTimeout(function () {
-                            that.showFire();
                             that.bombs[0].object.remove();
                             that.bombs.shift();
                             that.bomb_layer.draw();
 
                         }, 3000);
+
+                        setTimeout(function(){
+                            that.show_fire(positionOfBomb);
+                        },2000)
+
 
                         //this.grid[positionOfBomb[0]][positionOfBomb[1]]='b';
                         /*                    for (var i = 0; i < this.grid.length; i += 1) {
@@ -462,9 +487,52 @@ function game() {
                         return this;
                     }
                 });
-                return game;
-            }());
 
+                Object.defineProperty(game,'perform_fire_objects', {
+                    value: function (fireObjPosition) {
+                        var fireObj = Object.create(fire).init(fireObjPosition);
+                        console.log(game);
+                        this.fire_layer.add(fireObj.object);
+                        this.fires.push(fireObj);
+                    }
+                });
+
+                Object.defineProperty(game, 'show_fire', {
+                    value: function (positionOfBomb) {
+                        var NUMBER_OF_FIRE_OBJECTS=4;
+                        var that = this;
+                        var positionsOfFireUp = [positionOfBomb[0], positionOfBomb[1]-1];
+                        var positionsOfFireDown = [positionOfBomb[0], positionOfBomb[1]+1];
+                        var positionsOfFireLeft = [positionOfBomb[0]-1, positionOfBomb[1]];
+                        var positionsOfFireRight = [positionOfBomb[0]+1, positionOfBomb[1]];
+
+                        this.perform_fire_objects(positionsOfFireUp);
+                        this.perform_fire_objects(positionsOfFireDown);
+                        this.perform_fire_objects(positionsOfFireLeft);
+                        this.perform_fire_objects(positionsOfFireRight);
+
+                        this.fire_layer.draw();
+
+                        setTimeout(function () {
+                            that.fires[0].object.remove();
+                            that.fires[1].object.remove();
+                            that.fires[2].object.remove();
+                            that.fires[3].object.remove();
+                            that.fires.shift();
+                            that.fires.shift();
+                            that.fires.shift();
+                            that.fires.shift();
+                            
+                            that.fire_layer.draw();
+                            that.stone_layer.draw();
+                        }, 1000);
+
+                        return this;
+                    }
+                });
+
+                return game;
+            })();
 
             return {
                 getGame: function (grid) {
