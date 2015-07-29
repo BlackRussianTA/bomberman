@@ -1,0 +1,29 @@
+#startScreen, #howToPlay{
+    width: 576px;
+    height: 448px;
+    margin: auto;
+}
+
+h1, button, p, ul{
+    font-family: iceCream;
+    font-size: 64px;
+    text-align: center;
+}
+
+h1{
+    margin: 50px;
+    padding: 50px;
+    padding-top: 150px;
+}
+li{
+    list-style-type: none;
+}
+
+@font-face{
+    font-family: iceCream;
+    src: url('fonts/fonts/IceCream.eot');
+    src: url('fonts/fonts/IceCream.eot?#iefix') format('embedded-opentype'),
+    url('fonts/fonts/IceCream.woff2') format('woff2'),
+    url('fonts/fonts/IceCream.woff') format('woff'),
+    url('fonts/fonts/IceCream.ttf') format('truetype');
+}
