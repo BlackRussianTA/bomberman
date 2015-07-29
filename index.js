@@ -65,13 +65,6 @@ function game() {
                     grid.forEach(function (row, r) {
                         row.forEach(function (val, c) {
                             switch (val) {
-                                case '=':
-                                    var newPath = Object.create(path).init([c, r]);
-                                    setTimeout(function () {
-                                        g.path_layer.add(newPath.object);
-                                    }, 60);
-                                    g.paths.push(newPath);
-                                    break;
                                 case '+':
                                     var newStone = Object.create(stone).init([c, r]);
                                     setTimeout(function () {
@@ -80,25 +73,16 @@ function game() {
                                     g.stones.push(newStone);
                                     break;
                                 case 'c':
-                                    var newPath = Object.create(path).init([c, r]);
-                                    g.path_layer.add(newPath.object);
-                                    g.paths.push(newPath);
                                     var newCoin = Object.create(coin).init([c, r]);
                                     g.coin_layer.add(newCoin.object);
                                     g.coins.push(newCoin);
                                     break;
                                 case 'p':
-                                    var newPath = Object.create(path).init([c, r]);
-                                    g.path_layer.add(newPath.object);
-                                    g.paths.push(newPath);
                                     var newPlayer = Object.create(player).init([c, r]);
                                     g.player_layer.add(newPlayer.object);
                                     g.player = newPlayer;
                                     break;
                                 case 'e':
-                                    var newPath = Object.create(path).init([c, r]);
-                                    g.path_layer.add(newPath.object);
-                                    g.paths.push(newPath);
                                     var newEnemy = Object.create(enemy).init([c, r]);
                                     g.enemies_layer.add(newEnemy.object);
                                     g.enemies.push(newEnemy);
@@ -109,9 +93,6 @@ function game() {
                                     g.gate = newGate;
                                     break;
                                 case 'b':
-                                    var newPath = Object.create(path).init([c, r]);
-                                    g.path_layer.add(newPath.object);
-                                    g.paths.push(newPath);
                                     var newBomb = Object.create(bomb).init([c, r]);
                                     g.bomb_layer.add(newBomb.object);
                                     g.bomb = newBomb;
@@ -245,20 +226,6 @@ function game() {
                 });
                 return gate;
             }());
-            path = (function () {
-                var currentId = 0,
-                    path = Object.create({});
-                Object.defineProperty(path, 'init', {
-                    value: function (position) {
-                        this.object = helpers.createImageObject(position, CONSTANTS.PATH_IMG_SRC);
-                        this.id = ++currentId;
-                        this.row = position[1];
-                        this.column = position[0];
-                        return this;
-                    }
-                });
-                return path;
-            }());
             stone = (function () {
                 var currentId = 0,
                     stone = Object.create({});
@@ -337,12 +304,25 @@ function game() {
                         this.coin_layer = new Kinetic.Layer();
                         this.fire_layer = new Kinetic.Layer();
                         this.coins = [];
-                        this.paths = [];
+                        this.path;
                         this.stones = [];
                         this.enemies = [];
                         this.bombs = [];
                         this.fires = [];
                         var that = this;
+
+                        //add grass(path) background
+                        var imageObj = new Image();
+                        imageObj.src = CONSTANTS.PATH_IMG_SRC;
+                        path = new Kinetic.Image({
+                            x: 0,
+                            y: 0,
+                            fillPatternImage: imageObj,
+                            width: CONSTANTS.BOX_WIDTH * this.grid[0].length,
+                            height: CONSTANTS.BOX_HEIGHT * this.grid.length,
+                            fillPatternRepeat: "repeat"
+                        });
+                        this.path_layer.add(path);
                         helpers.buildGrid(this, grid);
                         // wait the images to be loaded
                         // and then add the layers to the stage
@@ -565,10 +545,10 @@ function game() {
 var module = game();
 
 var gameSet = [
-    ['p', '=', '+', '+', '=', '+', '+', '=', '='],
+    ['p', '=', '+', '+', 'c', '+', '+', '=', '='],
     ['+', '=', '+', '+', '=', '+', '+', '=', '+'],
-    ['+', '=', '=', '=', '=', '+', '+', '=', 'b'],
-    ['=', '=', '+', '=', '=', '=', '=', '=', '+'],
+    ['+', '=', '=', '=', '=', '+', '+', '=', 'c'],
+    ['=', 'c', '+', '=', '=', '=', '=', '=', '+'],
     ['=', '=', '+', 'c', '=', '+', '+', '=', '+'],
     ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
     ['=', 'e', '+', '+', '=', '+', '+', 'e', 'g']
