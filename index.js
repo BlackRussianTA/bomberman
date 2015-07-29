@@ -128,19 +128,6 @@ function game() {
                     return this;
                 }
             });
-
-            Object.defineProperty(player, 'addPlaylist', {
-                value: function (playlist) {
-                    validator.validateIfUndefined(playlist, 'Player add playlist parameter');
-                    if (playlist.id === undefined) {
-                        throw new Error('Player add playlist parameter must have id');
-                    }
-
-                    this._playlists.push(playlist);
-                    return this;
-                }
-            });
-
             return player;
         }());
         path = (function () {
