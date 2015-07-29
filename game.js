@@ -711,14 +711,14 @@ window.onload = function () {
         }, 1000);
 
         window.onkeydown = function (ev) {
-            if (ev.keyCode === 38) {
+            if (ev.keyCode === 38 || ev.keyCode === 87) {
                 game.player_move('up');
             }
-            else if (ev.keyCode === 37) {
+            else if (ev.keyCode === 37 || ev.keyCode === 65) {
                 game.player_move('left');
-            } else if (ev.keyCode === 39) {
+            } else if (ev.keyCode === 39 || ev.keyCode === 68) {
                 game.player_move('right');
-            } else if (ev.keyCode === 40) {
+            } else if (ev.keyCode === 40 || ev.keyCode === 83) {
                 game.player_move('down');
             }
         };

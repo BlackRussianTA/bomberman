@@ -426,7 +426,7 @@ window.onload = function () {
             game.player_move('right');
         } else if (ev.keyCode === 40  || ev.keyCode === 83) {
             game.player_move('down');
-        }else if (ev.keyCode === 32) {
+        }else if (ev.keyCode === 32 || ev.keyCode === 13) {
             game.put_bomb();
         }
     };
