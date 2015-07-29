@@ -12,6 +12,7 @@ function game() {
                 BOX_WIDTH: 64,
                 BOX_HEIGHT: 64,
                 PLAYER_IMG_SRC: 'images/player_walk2.png',
+                ENEMY_IMG_SRC: 'images/mouse.png',
                 PATH_IMG_SRC: 'images/grass.png',
                 STONE_IMG_SRC: 'images/stone.png'
             };
@@ -78,6 +79,14 @@ function game() {
                                 g.player_layer.add(newPlayer.object);
                                 g.player = newPlayer;
                                 break
+                            case 'e':
+                                var newPath = Object.create(path).init([c, r]);
+                                g.path_layer.add(newPath.object);
+                                g.paths.push(newPath);
+                                var newEnemy = Object.create(enemy).init([c, r]);
+                                g.enemies_layer.add(newEnemy.object);
+                                g.enemies.push(newEnemy);
+                                break
                         }
                     });
                 });
@@ -130,6 +139,19 @@ function game() {
             });
             return player;
         }());
+        enemy = (function () {
+            enemy = Object.create({});
+
+            Object.defineProperty(enemy, 'init', {
+                value: function (position) {
+                    this.object = helpers.createImageObject(position, CONSTANTS.ENEMY_IMG_SRC);
+                    this.row = position[1];
+                    this.column = position[0];
+                    return this;
+                }
+            });
+            return enemy;
+        }());
         path = (function () {
             var currentId = 0,
                 path = Object.create({});
@@ -166,15 +188,14 @@ function game() {
                     this.grid = grid;
                     this.stage = helpers.createStage(grid);
                     this.player_layer = new Kinetic.Layer();
+                    this.enemies_layer = new Kinetic.Layer();
                     this.path_layer = new Kinetic.Layer();
                     this.stone_layer = new Kinetic.Layer();
                     this.paths = [];
                     this.stones = [];
+                    this.enemies = [];
                     var that = this;
                     helpers.buildGrid(this, grid);
-                    /*
-
-                     */
                     // wait the images to be loaded
                     // and then add the layers to the stage
                     setTimeout(function () {
@@ -189,6 +210,10 @@ function game() {
 
                         that.stage.add(that.player_layer);
                     }, 60);
+                    setTimeout(function () {
+
+                        that.stage.add(that.enemies_layer);
+                    }, 60);
 
                     return this;
                 }
@@ -198,37 +223,50 @@ function game() {
                 value: function (direction) {
                     var canMove = helpers.isPossiblePlayerMove(direction, this.player, this.grid);
                     if(canMove){
+                        // new row and column position of the player
+                        var cur;
+                        //previous row and column position of the player
+                        var prev = [this.player.row, this.player.column];
                         switch(direction){
                             case 'right':
+                                cur =[this.player.row, this.player.column + 1];
+                                //move player
                                 var newX = this.player.object.getX() + CONSTANTS.BOX_WIDTH;
                                 this.player.object.setX(newX);
-                                this.grid[this.player.row][this.player.column] = '=';
-                                this.grid[this.player.row][this.player.column + 1] = 'p';
+                                //update player's column
                                 this.player.column += 1;
                                 break;
                             case 'left':
+                                cur =[this.player.row, this.player.column - 1];
                                 var newX = this.player.object.getX() - CONSTANTS.BOX_WIDTH;
                                 this.player.object.setX(newX);
-                                this.grid[this.player.row][this.player.column] = '=';
-                                this.grid[this.player.row][this.player.column - 1] = 'p';
                                 this.player.column -= 1;
                                 break;
                             case 'down':
+                                cur =[this.player.row + 1, this.player.column];
                                 var newY = this.player.object.getY() + CONSTANTS.BOX_HEIGHT;
                                 this.player.object.setY(newY);
-                                this.grid[this.player.row][this.player.column] = '=';
-                                this.grid[this.player.row + 1][this.player.column] = 'p';
                                 this.player.row += 1;
                                 break;
                             case 'up':
+                                cur =[this.player.row - 1, this.player.column];
                                 var newY = this.player.object.getY() - CONSTANTS.BOX_HEIGHT;
                                 this.player.object.setY(newY);
-                                this.grid[this.player.row][this.player.column] = '=';
-                                this.grid[this.player.row - 1][this.player.column] = 'p';
+
                                 this.player.row -= 1;
                                 break;
                         }
+
                         this.player_layer.draw();
+                        // update the grid matrix values
+                        if(this.grid[cur[0]][cur[1]] == 'e'){
+                            alert('Game Over');
+                        } else {
+                            this.grid[cur[0]][cur[1]] = 'p';
+                        }
+                        if(this.grid[prev[0]][prev[1]] == 'p'){
+                            this.grid[prev[0]][prev[1]] = '=';
+                        }
                     }
                 }
             });
@@ -255,7 +293,7 @@ var gameSet = [
     ['=', '=', '+', '=', '=', '=', '=', '=', '+'],
     ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
     ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
-    ['=', '=', '+', '+', '=', '+', '+', '=', '+']
+    ['=', 'e', '+', '+', '=', '+', '+', 'e', '+']
 ];
 window.onload = function () {
     var game = module.getGame(gameSet);
