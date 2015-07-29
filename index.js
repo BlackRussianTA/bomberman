@@ -6,11 +6,11 @@ function game() {
             enemy,
             gate,
             game,
-            validator,
             CONSTANTS = {
                 DIV_ID: 'kinetic-canvas',
                 BOX_WIDTH: 64,
                 BOX_HEIGHT: 64,
+                GATE_IMG_SRC: 'images/gate.png',
                 PLAYER_IMG_SRC: 'images/player_walk2.png',
                 ENEMY_IMG_SRC: 'images/mouse.png',
                 PATH_IMG_SRC: 'images/grass.png',
@@ -81,7 +81,7 @@ function game() {
                                 var newPlayer = Object.create(player).init([c, r]);
                                 g.player_layer.add(newPlayer.object);
                                 g.player = newPlayer;
-                                break
+                                break;
                             case 'e':
                                 var newPath = Object.create(path).init([c, r]);
                                 g.path_layer.add(newPath.object);
@@ -89,6 +89,11 @@ function game() {
                                 var newEnemy = Object.create(enemy).init([c, r]);
                                 g.enemies_layer.add(newEnemy.object);
                                 g.enemies.push(newEnemy);
+                                break;
+                            case 'g':
+                                var newGate = Object.create(gate).init([c, r]);
+                                g.gate_layer.add(newGate.object);
+                                g.gate = newGate;
                                 break
                         }
                     });
@@ -98,12 +103,12 @@ function game() {
                 var type = -1;
                 switch (direction) {
                     case 'right':
-                        if (grid[position[0]][position[1] + 1]) {
+                        if (grid[position[0]] &&grid[position[0]][position[1] + 1]) {
                             type = grid[position[0]][position[1] + 1];
                         }
                         break;
                     case 'left':
-                        if (grid[position[0]][position[1] - 1]) {
+                        if (grid[position[0]] &&grid[position[0]][position[1] - 1]) {
                             type = grid[position[0]][position[1] - 1];
                         }
                         break;
@@ -122,7 +127,7 @@ function game() {
             },
             isPossiblePlayerMove: function (direction, player, grid) {
                 var nextGridElem = this.getNextGridElem(direction, [player.row, player.column], grid);
-                if (nextGridElem !== -1 && nextGridElem != '+') {
+                if (nextGridElem !== -1 && nextGridElem != '+' ) {
                     return true;
                 }
                 return false;
@@ -181,18 +186,39 @@ function game() {
                     this.object = helpers.createImageObject(position, CONSTANTS.ENEMY_IMG_SRC);
                     this.row = position[1];
                     this.column = position[0];
-                    this.change_direction();
+                    var moves = ['left', 'right', 'up', 'down'];
+                    var move = helpers.getRandomInt(0,3);
+                    this.direction = moves[move];
                     return this;
                 }
             });
+            // change enemy's movement direction when an obstacle is is reach
+            // try to change the direction that can be taken
             Object.defineProperty(enemy, 'change_direction', {
-                value: function () {
+                value: function (grid) {
+                    var oldDirection = this.direction;
                     var moves = ['left', 'right', 'up', 'down'];
                     var move = helpers.getRandomInt(0,3);
+                    while(oldDirection == moves[move] && helpers.isPossiblePlayerMove(moves[move], this, grid) == false){
+                         move = helpers.getRandomInt(0,3);
+                    }
                     this.direction = moves[move];
                 }
             });
             return enemy;
+        }());
+        gate = (function () {
+                gate = Object.create({});
+            Object.defineProperty(gate, 'init', {
+                value: function (position) {
+                    this.object = helpers.createImageObject(position, CONSTANTS.GATE_IMG_SRC);
+                    this.row = position[1];
+                    this.column = position[0];
+                    this.locked = false;
+                    return this;
+                }
+            });
+            return gate;
         }());
         path = (function () {
             var currentId = 0,
@@ -223,7 +249,6 @@ function game() {
             return stone;
         }());
         game = (function () {
-            var currentId = 0,
                 game = Object.create({});
             Object.defineProperty(game, 'init', {
                 value: function (grid) {
@@ -233,6 +258,7 @@ function game() {
                     this.enemies_layer = new Kinetic.Layer();
                     this.path_layer = new Kinetic.Layer();
                     this.stone_layer = new Kinetic.Layer();
+                    this.gate_layer = new Kinetic.Layer();
                     this.paths = [];
                     this.stones = [];
                     this.enemies = [];
@@ -240,6 +266,7 @@ function game() {
                     helpers.buildGrid(this, grid);
                     // wait the images to be loaded
                     // and then add the layers to the stage
+                    that.stage.add(that.gate_layer);
                     setTimeout(function () {
                         that.stage.add(that.path_layer);
                     }, 60);
@@ -302,7 +329,7 @@ function game() {
                                 that.grid[prev[0]][prev[1]] = '=';
                             }
                         } else {
-                            enemy.change_direction();
+                            enemy.change_direction(that.grid);
                         }
                     });
                 }
@@ -330,7 +357,7 @@ var gameSet = [
     ['=', '=', '+', '=', '=', '=', '=', '=', '+'],
     ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
     ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
-    ['=', 'e', '+', '+', '=', '+', '+', 'e', '+']
+    ['=', 'e', '+', '+', '=', '+', '+', 'e', 'g']
 ];
 window.onload = function () {
     var game = module.getGame(gameSet);
