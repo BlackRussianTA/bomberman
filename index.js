@@ -1,3 +1,4 @@
+
 function game() {
     var module = (function () {
         var player,
@@ -5,6 +6,7 @@ function game() {
             path,
             enemy,
             gate,
+            bomb,
             game,
             CONSTANTS = {
                 DIV_ID: 'kinetic-canvas',
@@ -14,7 +16,8 @@ function game() {
                 PLAYER_IMG_SRC: 'images/player_walk2.png',
                 ENEMY_IMG_SRC: 'images/mouse.png',
                 PATH_IMG_SRC: 'images/grass.png',
-                STONE_IMG_SRC: 'images/stone.png'
+                STONE_IMG_SRC: 'images/stone.png',
+                BOMB_IMG_SRC: 'images/bomb.png'
             };
 
         function indexOfElementWithIdInCollection(collection, id) {
@@ -28,7 +31,7 @@ function game() {
             return -1;
         }
 
-        helpers = {
+        var helpers = {
             getRandomInt: function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             },
@@ -63,7 +66,7 @@ function game() {
                             case '=':
                                 var newPath = Object.create(path).init([c, r]);
                                 setTimeout(function () {
-                                    g.path_layer.add(newPath.object);;
+                                    g.path_layer.add(newPath.object);
                                 }, 60);
                                 g.paths.push(newPath);
                                 break;
@@ -71,7 +74,7 @@ function game() {
                                 var newStone = Object.create(stone).init([c, r]);
                                 setTimeout(function () {
                                     g.stone_layer.add(newStone.object);
-                                }, 60);
+                                },60);
                                 g.stones.push(newStone);
                                 break;
                             case 'p':
@@ -94,7 +97,15 @@ function game() {
                                 var newGate = Object.create(gate).init([c, r]);
                                 g.gate_layer.add(newGate.object);
                                 g.gate = newGate;
-                                break
+                                break;
+                            case 'b':
+                                var newPath = Object.create(path).init([c, r]);
+                                g.path_layer.add(newPath.object);
+                                g.paths.push(newPath);
+                                var newBomb=Object.create(bomb).init([c,r]);
+                                g.bomb_layer.add(newBomb.object);
+                                g.bomb=newBomb;
+                                break;
                         }
                     });
                 });
@@ -251,6 +262,20 @@ function game() {
             });
             return stone;
         }());
+        bomb = (function () {
+            var currentId = 0,
+                bomb = Object.create({});
+            Object.defineProperty(bomb, 'init', {
+                value: function (position) {
+                    this.object = helpers.createImageObject(position, CONSTANTS.BOMB_IMG_SRC);
+                    this.id = ++currentId;
+                    this.row = position[1];
+                    this.column = position[0];
+                    return this;
+                }
+            });
+            return bomb;
+        }());
         game = (function () {
                 game = Object.create({});
             Object.defineProperty(game, 'init', {
@@ -262,6 +287,7 @@ function game() {
                     this.path_layer = new Kinetic.Layer();
                     this.stone_layer = new Kinetic.Layer();
                     this.gate_layer = new Kinetic.Layer();
+                    this.bomb_layer=new Kinetic.Layer();
                     this.paths = [];
                     this.stones = [];
                     this.enemies = [];
@@ -279,17 +305,19 @@ function game() {
                     }, 60);
 
                     setTimeout(function () {
-
                         that.stage.add(that.player_layer);
                     }, 60);
                     setTimeout(function () {
-
                         that.stage.add(that.enemies_layer);
+                    }, 60);
+                    setTimeout(function () {
+                        that.stage.add(that.bomb_layer);
                     }, 60);
 
                     return this;
                 }
             });
+
             Object.defineProperty(game, 'player_move', {
 
                 value: function (direction) {
@@ -303,7 +331,9 @@ function game() {
                         this.player_layer.draw();
                         // update the grid matrix values
                         if (this.grid[cur[0]][cur[1]] == 'e') {
-                            alert('Game Over');
+                            //------------------------------------------------------------------------------------------------------------------
+                            this.grid[cur[0]][cur[1]] = 'b';
+                            this.bomb_layer.draw();
                         } else if(this.grid[cur[0]][cur[1]] == 'g'){
                             alert('Level Completed');
                         } else {
@@ -326,7 +356,8 @@ function game() {
                           var cur =  helpers.movePlayer(enemy.direction, enemy, that.grid);
                             that.enemies_layer.draw();
                             if (that.grid[cur[0]][cur[1]] == 'p') {
-                                alert('Game Over');
+                                //------------------------------------------------------------------------------------------------------------------
+                                that.grid[cur[0]][cur[1]] = 'b';
                             } else {
                                 that.grid[cur[0]][cur[1]] = 'e';
                             }
@@ -337,6 +368,21 @@ function game() {
                             enemy.change_direction(that.grid);
                         }
                     });
+                }
+            });
+            Object.defineProperty(game, 'put_bomb', {
+                value: function () {
+                    var that = this;
+                    var positionOfBomb = [that.player.column, that.player.row];
+                    var newBomb=Object.create(bomb).init(positionOfBomb);
+                    that.bomb_layer.add(newBomb.object);
+                    that.bomb=newBomb;
+                    that.bomb_layer.draw();
+                    //this.grid[positionOfBomb[0]][positionOfBomb[1]]='b';
+
+                    for(var i=0;i<this.grid.length;i+=1){
+                            console.log(this.grid[i])
+                    }
                 }
             });
             return game;
@@ -358,7 +404,7 @@ var module = game();
 var gameSet = [
     ['p', '=', '+', '+', '=', '+', '+', '=', '='],
     ['+', '=', '+', '+', '=', '+', '+', '=', '+'],
-    ['+', '=', '=', '=', '=', '+', '+', '=', '='],
+    ['+', '=', '=', '=', '=', '+', '+', '=', 'b'],
     ['=', '=', '+', '=', '=', '=', '=', '=', '+'],
     ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
     ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
@@ -379,6 +425,8 @@ window.onload = function () {
             game.player_move('right');
         } else if (ev.keyCode === 40  || ev.keyCode === 83) {
             game.player_move('down');
+        }else if (ev.keyCode === 32) {
+            game.put_bomb();
         }
     };
 };
