@@ -1,24 +1,24 @@
-# Javascript UI and DOM team project Repository
+п»ї# Javascript UI and DOM team project
 
 Team Black Russian
 ==================
 ### Team members:
 
-Антоан Еленков <a href="https://telerikacademy.com/Users/antoanelenkov">antoanelenkov</a>
+РђРЅС‚РѕР°РЅ Р•Р»РµРЅРєРѕРІ <a href="https://telerikacademy.com/Users/antoanelenkov">antoanelenkov</a>
 
-Вероника Велкова <a href="https://telerikacademy.com/Users/Nicca">Nicca</a>
+Р’РµСЂРѕРЅРёРєР° Р’РµР»РєРѕРІР° <a href="https://telerikacademy.com/Users/Nicca">Nicca</a>
 
-Димитър Панайотов <a href="https://telerikacademy.com/Users/The.Bager">The.Bager</a>
+Р”РёРјРёС‚СЉСЂ РџР°РЅР°Р№РѕС‚РѕРІ <a href="https://telerikacademy.com/Users/The.Bager">The.Bager</a>
 
-Иво Паунов <a href="https://telerikacademy.com/Users/ivo.paunov">ivo.paunov</a>
+РРІРѕ РџР°СѓРЅРѕРІ <a href="https://telerikacademy.com/Users/ivo.paunov">ivo.paunov</a>
 
-Красимир Георгиев <a href="https://telerikacademy.com/Users/evilshadow">evilshadow</a>
+РљСЂР°СЃРёРјРёСЂ Р“РµРѕСЂРіРёРµРІ <a href="https://telerikacademy.com/Users/evilshadow">evilshadow</a>
 
-Кристина Милева <a href="https://telerikacademy.com/Users/Kmileva">Kmileva</a>
+РљСЂРёСЃС‚РёРЅР° РњРёР»РµРІР° <a href="https://telerikacademy.com/Users/Kmileva">Kmileva</a>
 
-Мирослав Марков <a href="https://telerikacademy.com/Users/marks">marks</a>
+РњРёСЂРѕСЃР»Р°РІ РњР°СЂРєРѕРІ <a href="https://telerikacademy.com/Users/marks">marks</a>
 
-Пенко Живанов <a href="https://telerikacademy.com/Users/PenkoValchev">PenkoValchev</a>
+РџРµРЅРєРѕ Р–РёРІР°РЅРѕРІ <a href="https://telerikacademy.com/Users/PenkoValchev">PenkoValchev</a>
 
 ### Introduction
 
