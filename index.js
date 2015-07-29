@@ -29,6 +29,9 @@ function game() {
         }
 
         helpers = {
+            getRandomInt: function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            },
             createImageObject: function (position, imageSrc) {
                 var x = CONSTANTS.BOX_WIDTH * position[0];
                 var y = CONSTANTS.BOX_HEIGHT * position[1];
@@ -93,7 +96,6 @@ function game() {
             },
             getNextGridElem: function (direction, position, grid) {
                 var type = -1;
-                console.log(direction);
                 switch (direction) {
                     case 'right':
                         if (grid[position[0]][position[1] + 1]) {
@@ -106,12 +108,12 @@ function game() {
                         }
                         break;
                     case 'down':
-                        if (grid[position[0] + 1][position[1]]) {
+                        if (grid[position[0] + 1] && grid[position[0] + 1][position[1]]) {
                             type = grid[position[0] + 1][position[1]];
                         }
                         break;
                     case 'up':
-                        if (grid[position[0] - 1][position[1] ]) {
+                        if (grid[position[0] - 1] &&  grid[position[0] - 1][position[1]]) {
                             type = grid[position[0] - 1][position[1]];
                         }
                         break;
@@ -124,6 +126,38 @@ function game() {
                     return true;
                 }
                 return false;
+            },
+            movePlayer: function(direction, player, grid){
+                var cur;
+                switch (direction) {
+                    case 'right':
+                        cur = [player.row, player.column + 1];
+                        //move player
+                        var newX = player.object.getX() + CONSTANTS.BOX_WIDTH;
+                        player.object.setX(newX);
+                        //update player's column
+                        player.column += 1;
+                        break;
+                    case 'left':
+                        cur = [player.row, player.column - 1];
+                        var newX = player.object.getX() - CONSTANTS.BOX_WIDTH;
+                        player.object.setX(newX);
+                        player.column -= 1;
+                        break;
+                    case 'down':
+                        cur = [player.row + 1, player.column];
+                        var newY = player.object.getY() + CONSTANTS.BOX_HEIGHT;
+                        player.object.setY(newY);
+                        player.row += 1;
+                        break;
+                    case 'up':
+                        cur = [player.row - 1, player.column];
+                        var newY = player.object.getY() - CONSTANTS.BOX_HEIGHT;
+                        player.object.setY(newY);
+                        player.row -= 1;
+                        break;
+                }
+                return cur;
             }
         };
         player = (function () {
@@ -147,7 +181,15 @@ function game() {
                     this.object = helpers.createImageObject(position, CONSTANTS.ENEMY_IMG_SRC);
                     this.row = position[1];
                     this.column = position[0];
+                    this.change_direction();
                     return this;
+                }
+            });
+            Object.defineProperty(enemy, 'change_direction', {
+                value: function () {
+                    var moves = ['left', 'right', 'up', 'down'];
+                    var move = helpers.getRandomInt(0,3);
+                    this.direction = moves[move];
                 }
             });
             return enemy;
@@ -222,52 +264,47 @@ function game() {
 
                 value: function (direction) {
                     var canMove = helpers.isPossiblePlayerMove(direction, this.player, this.grid);
-                    if(canMove){
-                        // new row and column position of the player
-                        var cur;
+                    if (canMove) {
+
                         //previous row and column position of the player
                         var prev = [this.player.row, this.player.column];
-                        switch(direction){
-                            case 'right':
-                                cur =[this.player.row, this.player.column + 1];
-                                //move player
-                                var newX = this.player.object.getX() + CONSTANTS.BOX_WIDTH;
-                                this.player.object.setX(newX);
-                                //update player's column
-                                this.player.column += 1;
-                                break;
-                            case 'left':
-                                cur =[this.player.row, this.player.column - 1];
-                                var newX = this.player.object.getX() - CONSTANTS.BOX_WIDTH;
-                                this.player.object.setX(newX);
-                                this.player.column -= 1;
-                                break;
-                            case 'down':
-                                cur =[this.player.row + 1, this.player.column];
-                                var newY = this.player.object.getY() + CONSTANTS.BOX_HEIGHT;
-                                this.player.object.setY(newY);
-                                this.player.row += 1;
-                                break;
-                            case 'up':
-                                cur =[this.player.row - 1, this.player.column];
-                                var newY = this.player.object.getY() - CONSTANTS.BOX_HEIGHT;
-                                this.player.object.setY(newY);
-
-                                this.player.row -= 1;
-                                break;
-                        }
-
+                        // new row and column position of the player
+                        var cur = helpers.movePlayer(direction, this.player, this.grid);
                         this.player_layer.draw();
                         // update the grid matrix values
-                        if(this.grid[cur[0]][cur[1]] == 'e'){
+                        if (this.grid[cur[0]][cur[1]] == 'e') {
                             alert('Game Over');
                         } else {
                             this.grid[cur[0]][cur[1]] = 'p';
                         }
-                        if(this.grid[prev[0]][prev[1]] == 'p'){
+                        if (this.grid[prev[0]][prev[1]] == 'p') {
                             this.grid[prev[0]][prev[1]] = '=';
                         }
                     }
+                }
+            });
+            Object.defineProperty(game, 'enemy_move', {
+
+                value: function () {
+                    var that = this;
+                    this.enemies.forEach(function(enemy){
+                        var prev = [enemy.row, enemy.column];
+                        var canMove = helpers.isPossiblePlayerMove(enemy.direction, enemy, that.grid);
+                        if(canMove){
+                          var cur =  helpers.movePlayer(enemy.direction, enemy, that.grid);
+                            that.enemies_layer.draw();
+                            if (that.grid[cur[0]][cur[1]] == 'p') {
+                                alert('Game Over');
+                            } else {
+                                that.grid[cur[0]][cur[1]] = 'e';
+                            }
+                            if (that.grid[prev[0]][prev[1]] == 'e') {
+                                that.grid[prev[0]][prev[1]] = '=';
+                            }
+                        } else {
+                            enemy.change_direction();
+                        }
+                    });
                 }
             });
             return game;
@@ -297,6 +334,9 @@ var gameSet = [
 ];
 window.onload = function () {
     var game = module.getGame(gameSet);
+    setInterval(function(){
+        game.enemy_move();
+    },1000);
     window.onkeydown = function (ev) {
         if (ev.keyCode === 38) {
             game.player_move('up');
@@ -305,7 +345,7 @@ window.onload = function () {
             game.player_move('left');
         } else if (ev.keyCode === 39) {
             game.player_move('right');
-        } else if(ev.keyCode === 40){
+        } else if (ev.keyCode === 40) {
             game.player_move('down');
         }
     };
