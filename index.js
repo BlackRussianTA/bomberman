@@ -125,8 +125,11 @@ function game() {
                 }
                 return type;
             },
-            isPossiblePlayerMove: function (direction, player, grid) {
+            isPossiblePlayerMove: function (direction, player, grid, gate_status) {
                 var nextGridElem = this.getNextGridElem(direction, [player.row, player.column], grid);
+                if(nextGridElem == 'g' && gate_status === false){
+                    return true;
+                };
                 if (nextGridElem !== -1 && nextGridElem != '+' ) {
                     return true;
                 }
@@ -199,7 +202,7 @@ function game() {
                     var oldDirection = this.direction;
                     var moves = ['left', 'right', 'up', 'down'];
                     var move = helpers.getRandomInt(0,3);
-                    while(oldDirection == moves[move] && helpers.isPossiblePlayerMove(moves[move], this, grid) == false){
+                    while(oldDirection == moves[move] && helpers.isPossiblePlayerMove(moves[move], this, grid, true) == false){
                          move = helpers.getRandomInt(0,3);
                     }
                     this.direction = moves[move];
@@ -290,7 +293,7 @@ function game() {
             Object.defineProperty(game, 'player_move', {
 
                 value: function (direction) {
-                    var canMove = helpers.isPossiblePlayerMove(direction, this.player, this.grid);
+                    var canMove = helpers.isPossiblePlayerMove(direction, this.player, this.grid, this.gate.locked);
                     if (canMove) {
 
                         //previous row and column position of the player
@@ -301,6 +304,8 @@ function game() {
                         // update the grid matrix values
                         if (this.grid[cur[0]][cur[1]] == 'e') {
                             alert('Game Over');
+                        } else if(this.grid[cur[0]][cur[1]] == 'g'){
+                            alert('Level Completed');
                         } else {
                             this.grid[cur[0]][cur[1]] = 'p';
                         }
@@ -316,7 +321,7 @@ function game() {
                     var that = this;
                     this.enemies.forEach(function(enemy){
                         var prev = [enemy.row, enemy.column];
-                        var canMove = helpers.isPossiblePlayerMove(enemy.direction, enemy, that.grid);
+                        var canMove = helpers.isPossiblePlayerMove(enemy.direction, enemy, that.grid,that.gate.locked);
                         if(canMove){
                           var cur =  helpers.movePlayer(enemy.direction, enemy, that.grid);
                             that.enemies_layer.draw();
