@@ -20,16 +20,6 @@ function game() {
                 BOMB_IMG_SRC: 'images/bomb.png'
             };
 
-        function indexOfElementWithIdInCollection(collection, id) {
-            var i, len;
-            for (i = 0, len = collection.length; i < len; i++) {
-                if (collection[i].id == id) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
 
         var helpers = {
             getRandomInt: function (min, max) {
@@ -281,6 +271,7 @@ function game() {
             Object.defineProperty(game, 'init', {
                 value: function (grid) {
                     this.grid = grid;
+                    this.lives = 3;
                     this.stage = helpers.createStage(grid);
                     this.player_layer = new Kinetic.Layer();
                     this.enemies_layer = new Kinetic.Layer();
