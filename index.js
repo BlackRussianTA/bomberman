@@ -26,8 +26,8 @@ function game() {
             var helpers = {
                 getIndexOf: function (elems, row, column) {
                     var index = -1;
-                    elems.forEach(function(elem, i){
-                        if(elem.row === row && elem.column === column){
+                    elems.forEach(function (elem, i) {
+                        if (elem.row === row && elem.column === column) {
                             index = i;
                             return true;
                         }
@@ -129,10 +129,12 @@ function game() {
                 },
                 isPossiblePlayerMove: function (direction, player, grid, gate_status) {
                     var nextGridElem = this.getNextGridElem(direction, [player.row, player.column], grid);
+
                     if (nextGridElem == 'g' && gate_status === false) {
                         return true;
                     }
-                    else if (nextGridElem !== -1 && nextGridElem !== '+') {
+                    ;
+                    if (nextGridElem !== -1 && nextGridElem !== '+') {
                         return true;
                     }
                     return false;
@@ -325,7 +327,6 @@ function game() {
                         helpers.buildGrid(this, grid);
                         // wait the images to be loaded
                         // and then add the layers to the stage
-                        that.stage.add(that.gate_layer);
                         setTimeout(function () {
                             that.stage.add(that.path_layer);
                         }, 60);
@@ -349,6 +350,9 @@ function game() {
                             that.stage.add(that.coin_layer);
                         }, 60);
 
+                        setTimeout(function () {
+                            that.stage.add(that.gate_layer);
+                        }, 60);
 
                         return this;
                     }
@@ -358,6 +362,7 @@ function game() {
 
                     value: function (direction) {
                         var canMove = helpers.isPossiblePlayerMove(direction, this.player, this.grid, this.gate.locked);
+
                         if (canMove) {
 
                             //previous row and column position of the player
@@ -370,26 +375,23 @@ function game() {
                             switch (that.grid[cur[0]][cur[1]]) {
                                 case 'e':
                                     that.remove_life();
-                                    that.grid[cur[0]][cur[1]] = 'b';
                                     that.bomb_layer.draw();
                                     break;
                                 case 'g':
                                     that.endTime = Math.floor(Date.now() / 1000);
                                     alert('Level Completed');
                                     that.timeCompleted = that.endTime - that.startTime;
-                                    that.points += that.timeCompleted/2;
+                                    that.points += that.timeCompleted / 2;
                                     console.log('complete for ' + that.timeCompleted + ' seconds ');
                                     console.log('points: ' + that.points);
-
                                     break;
                                 case 'c':
                                     that.points += 10;
-                                    var index = helpers.getIndexOf(that.coins,cur[0],cur[1]);
+                                    var index = helpers.getIndexOf(that.coins, cur[0], cur[1]);
                                     var coin = that.coins[index];
                                     coin.object.remove();
                                     that.coin_layer.draw();
                                     that.coins.splice(index, 1);
-
                                 default:
                                     that.grid[cur[0]][cur[1]] = 'p';
                             }
@@ -435,7 +437,8 @@ function game() {
                             console.log('game over');
                             this.endTime = Math.floor(Date.now() / 1000);
                             this.timeCompleted = this.endTime - this.startTime;
-                            this.points += this.timeCompleted/2;
+                            this.points += this.timeCompleted / 2;
+
                             console.log('complete for ' + this.timeCompleted + ' seconds ');
                             console.log('points ' + this.points);
                             this.player_layer.draw();
@@ -446,6 +449,7 @@ function game() {
                             this.player.object.setY(0);
                             this.player_layer.draw();
                             this.grid[0][0] = 'p';
+                            console.log(this.grid);
                         }
                     }
                 });
@@ -466,11 +470,11 @@ function game() {
                             that.bombs.shift();
                             that.bomb_layer.draw();
 
-                        }, 3000);
+                        }, 1000);
 
-                        setTimeout(function(){
+                        setTimeout(function () {
                             that.show_fire(positionOfBomb);
-                        },2000)
+                        }, 500)
 
 
                         //this.grid[positionOfBomb[0]][positionOfBomb[1]]='b';
@@ -482,10 +486,10 @@ function game() {
                     }
                 });
 
-                Object.defineProperty(game,'perform_fire_objects', {
+                Object.defineProperty(game, 'perform_fire_objects', {
                     value: function (fireObjPosition) {
                         var fireObj = Object.create(fire).init(fireObjPosition);
-                        console.log(game);
+                        //console.log(game);
                         this.fire_layer.add(fireObj.object);
                         this.fires.push(fireObj);
                     }
@@ -493,17 +497,22 @@ function game() {
 
                 Object.defineProperty(game, 'show_fire', {
                     value: function (positionOfBomb) {
-                        var NUMBER_OF_FIRE_OBJECTS=4;
+                        var NUMBER_OF_FIRE_OBJECTS = 4;
                         var that = this;
-                        var positionsOfFireUp = [positionOfBomb[0], positionOfBomb[1]-1];
-                        var positionsOfFireDown = [positionOfBomb[0], positionOfBomb[1]+1];
-                        var positionsOfFireLeft = [positionOfBomb[0]-1, positionOfBomb[1]];
-                        var positionsOfFireRight = [positionOfBomb[0]+1, positionOfBomb[1]];
+                        var positionsOfFireUp = [positionOfBomb[0], positionOfBomb[1] - 1];
+                        var positionsOfFireDown = [positionOfBomb[0], positionOfBomb[1] + 1];
+                        var positionsOfFireLeft = [positionOfBomb[0] - 1, positionOfBomb[1]];
+                        var positionsOfFireRight = [positionOfBomb[0] + 1, positionOfBomb[1]];
 
                         this.perform_fire_objects(positionsOfFireUp);
                         this.perform_fire_objects(positionsOfFireDown);
                         this.perform_fire_objects(positionsOfFireLeft);
                         this.perform_fire_objects(positionsOfFireRight);
+
+                        /*                        for (var i = 0; i < this.grid.length; i += 1) {
+                         console.log(this.grid[i]);
+                         }
+                         ;*/
 
                         this.fire_layer.draw();
 
@@ -516,12 +525,37 @@ function game() {
                             that.fires.shift();
                             that.fires.shift();
                             that.fires.shift();
-                            
+
+                            that.kill_creatures_in_the_range(positionsOfFireUp);
+                            that.kill_creatures_in_the_range(positionsOfFireDown);
+                            that.kill_creatures_in_the_range(positionsOfFireLeft);
+                            that.kill_creatures_in_the_range(positionsOfFireRight);
+                            that.kill_creatures_in_the_range(positionOfBomb);
+
+                            that.enemies_layer.draw();
                             that.fire_layer.draw();
                             that.stone_layer.draw();
                         }, 1000);
 
                         return this;
+                    }
+                });
+
+                Object.defineProperty(game, 'kill_creatures_in_the_range', {
+                    value: function (killingCoordinates) {
+                        for (var i = 0; i < this.enemies.length; i += 1) {
+                            if (this.enemies[i].column == killingCoordinates[0]
+                                && this.enemies[i].row == killingCoordinates[1]) {
+                                this.enemies[i].object.remove();
+                                this.enemies.splice(i, 1);
+                                this.grid[killingCoordinates[1]][killingCoordinates[0]] = '=';
+                                //this.path_layer.draw();
+                            }
+                        }
+
+                        if(this.player.column==killingCoordinates[0] && this.player.row == killingCoordinates[1]){
+                            this.remove_life();
+                        }
                     }
                 });
 
@@ -533,7 +567,10 @@ function game() {
                     return Object.create(game).init(grid);
                 }
             };
-        }());
+        }
+        ()
+        )
+        ;
 
     return module;
 }
@@ -541,12 +578,12 @@ function game() {
 var module = game();
 
 var gameSet = [
-    ['p', '=', '+', '+', 'c', '+', '+', '=', '='],
-    ['+', '=', '+', '+', '=', '+', '+', '=', '+'],
+    ['p', '=', '+', '+', '=', '+', '+', '=', '='],
+    ['+', '=', '+', 'c', '=', '+', '+', '=', '+'],
     ['+', '=', '=', '=', '=', '+', '+', '=', 'c'],
-    ['=', 'c', '+', '=', '=', '=', '=', '=', '+'],
+    ['=', '=', '+', '=', '=', '=', '=', '=', '+'],
     ['=', '=', '+', 'c', '=', '+', '+', '=', '+'],
-    ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
+    ['=', '=', '+', '+', '=', '+', 'c', '=', '+'],
     ['=', 'e', '+', '+', '=', '+', '+', 'e', 'g']
 ];
 window.onload = function () {
