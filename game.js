@@ -1,5 +1,5 @@
 // ------------------------------------------- GAME ----------------------------------------------
-var startGame= function () {
+window.onload= function () {
     var CONSTANTS_GLOBAL = {
             SPRITE_IMAGE_PATH: 'images/Players/sprite-sheet.png'
         },
