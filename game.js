@@ -762,6 +762,14 @@ window.onload = function () {
             }
         });
 
+
+        function sleep(miliseconds) {
+           var currentTime = new Date().getTime();
+
+           while (currentTime + miliseconds >= new Date().getTime()) {
+           }
+       }
+        
         Object.defineProperty(game, 'remove_life', {
 
             value: function () {
@@ -780,11 +788,23 @@ window.onload = function () {
                     alert('Game Over!  Played ' + this.timeCompleted + ' seconds ');
                     //  console.log('game over');
                     
+                    
+                   
+                    
                     //console.log('complete for '+ this.timeCompleted + ' seconds ');
                     this.points += this.timeCompleted / 2;
                     //console.log('complete for ' + this.timeCompleted + ' seconds ');
                     //console.log('points ' + this.points);
                     this.player_layer.draw();
+                    
+                    // Reload
+                    //  if (confirm('Do you want to try again?')) {
+                    //     location.reload();
+                    // }
+                    // else{
+                    //     //sleep(10000);
+                    // }
+                
                 } else {
                     this.player.row = 0;
                     this.player.column = 0;
