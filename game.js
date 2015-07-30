@@ -770,11 +770,14 @@ window.onload = function () {
 
                 if (this.lives < 0) {
 
-                    this.player_layer.layer.remove(this.player.sprite);
-                    //  console.log('game over');
                     this.endTime = Math.floor(Date.now() / 1000);
                     this.timeCompleted = this.endTime - this.startTime;
-                    //   console.log('complete for '+ this.timeCompleted + ' seconds ');
+                        
+                    this.player_layer.layer.remove(this.player.sprite);
+                    alert('Game Over!  Played ' + this.timeCompleted + ' seconds ');
+                    //  console.log('game over');
+                    
+                    //console.log('complete for '+ this.timeCompleted + ' seconds ');
                     this.points += this.timeCompleted / 2;
                     //console.log('complete for ' + this.timeCompleted + ' seconds ');
                     //console.log('points ' + this.points);
