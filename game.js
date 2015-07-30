@@ -18,7 +18,11 @@ window.onload = function () {
             brick: {brick: animationBox.brick},
             gate: animationGate,
             ice: animationIce,
-            empty: animationEmpty
+            empty: animationEmpty,
+            background: animationBackground,
+            fire: animationFire,
+            coin: animationCoin,
+            bomb: animationBomb
         },
         spriteImage = new Image(),
         backgroundImage = new Image(),
@@ -32,7 +36,8 @@ window.onload = function () {
             brick: 'brick',
             locked: 'locked',
             opened: 'open',
-            trap: 'trap'
+            trap: 'trap',
+
         },
         gameObjectType = {
             player: 'p',
@@ -42,7 +47,9 @@ window.onload = function () {
             empty: '=',
             path: '=',
             coin: 'c',
-            gate: 'g'
+            gate: 'g',
+            bomb: 'b',
+            fire: 'f'
         },
         DIRECTIONS = {
             left: 'left',
@@ -120,12 +127,22 @@ window.onload = function () {
             return false;
         }
 
-        //},
+        function getIndexOf(elems, row, column) {
+            var index = -1;
+            elems.forEach(function (elem, i) {
+                if (elem.row === row && elem.column === column) {
+                    index = i;
+                    return true;
+                }
+            });
+            return index;
+        }
 
         return {
             getRandomInt: getRandomInt,
             getNextGridElem: getNextGridElem,
-            isPossiblePlayerMove: isPossiblePlayerMove
+            isPossiblePlayerMove: isPossiblePlayerMove,
+            getIndexOf: getIndexOf
         }
     }());
 
@@ -173,7 +190,7 @@ window.onload = function () {
                         frame: 0
                     });
 
-                    self.sprite.scale({x:  CONSTANTS.SCALE, y: CONSTANTS.SCALE });
+                    self.sprite.scale({x: CONSTANTS.SCALE, y: CONSTANTS.SCALE});
 
                     return self;
                 }
@@ -444,6 +461,28 @@ window.onload = function () {
             return layer
         }());
 
+// ----- background -------------------------------------
+
+        var background = (function (parent) {
+            var background = Object.create(gameObject);
+
+
+            Object.defineProperty(background, 'init', {
+                value: function (initialRow, initialCol) {
+                    var self = this;
+
+                    parent.init.call(self, initialRow, initialCol, animationStates.move, sprites.background);
+
+                    self.sprite.image(backgroundImage);
+                    self.sprite.frameRate(24);
+
+                    return this;
+                }
+            });
+
+            return background;
+        }(gameObject));
+
 
 // ----- setScene -------------------------------------
 
@@ -473,12 +512,18 @@ window.onload = function () {
                 return Object.create(gameObject).init(row, col, animationStates.idle, sprites.empty, gameObjectType.empty);
             },
             getCoin: function (row, col) {
-                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.ice, gameObjectType.coin);
+                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.coin, gameObjectType.coin);
             },
             getBomb: function (row, col) {
-                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.empty, gameObjectType.empty);
+                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.ice, gameObjectType.bomb);
+            },
+            getBackground: function (row, col) {
+                return Object.create(background).init(0, 0);
+            },
+            getFire: function (row, col) {
+                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.fire, gameObjectType.fire);
             }
-        };
+        }
     }());
 
 
@@ -488,23 +533,17 @@ window.onload = function () {
         var game = Object.create({});
 
         function buildField(g, grid) {
-            var r ,
+            var r,
                 c,
                 lenRows = grid.length,
                 lenCols = grid[0].length,
                 val;
 
-            for (r = 0; r < lenRows ; r += 1) {
+            for (r = 0; r < lenRows; r += 1) {
                 for (c = 0; c < lenCols; c += 1) {
                     val = grid[r][c];
 
                     switch (val) {
-                        case gameObjectType.empty:
-                            var newPath = gameAssetsBuilder.getPath(r, c);
-                            g.path_layer.add(newPath.sprite);
-                            newPath.start();
-                            g.paths.push(newPath);
-                            break;
                         case gameObjectType.stone:
                             var newStone = gameAssetsBuilder.getStone(r, c);
                             g.stone_layer.add(newStone.sprite);
@@ -512,35 +551,29 @@ window.onload = function () {
                             g.stones.push(newStone);
                             break;
                         case gameObjectType.player:
-                            var newPath = gameAssetsBuilder.getPath(r, c);
-                            g.path_layer.add(newPath.sprite);
-                            g.paths.push(newPath);
                             var newPlayer = gameAssetsBuilder.getPlayer(r, c);
                             g.player_layer.add(newPlayer.sprite);
                             newPlayer.start();
                             g.player = newPlayer;
-
-                            console.log(newPlayer)
-                            console.log(r)
-                            console.log(c)
+                            //
+                            //console.log(newPlayer)
+                            //console.log(r)
+                            //console.log(c)
 
                             break;
                         case gameObjectType.coin:
                             var newCoin = gameAssetsBuilder.getCoin(r, c);
                             g.coin_layer.add(newCoin.sprite);
                             newCoin.start();
-                            g.gate = newCoin;
+                            g.coins.push(newCoin);
                             break;
                         case gameObjectType.enemy:
-                            var newPath = gameAssetsBuilder.getPath(r, c);
-                            g.path_layer.add(newPath.sprite);
-                            g.paths.push(newPath);
                             var newEnemy = gameAssetsBuilder.getEnemy(r, c);
                             g.enemies_layer.add(newEnemy.sprite);
                             newEnemy.start();
                             g.enemies.push(newEnemy);
-                            console.log(newEnemy)
-                            console.log(c)
+                            //console.log(newEnemy)
+                            //console.log(c)
                             break;
                         case gameObjectType.gate:
                             var newGate = gameAssetsBuilder.getGate(r, c);
@@ -548,7 +581,6 @@ window.onload = function () {
                             newGate.start();
                             g.gate = newGate;
                             break;
-
                     }
                 }
             }
@@ -590,18 +622,7 @@ window.onload = function () {
 
                     break;
             }
-            //console.log(player.row)
-            //console.log(player.column)
-            //console.log('curr in move' + cur)
-            ////console
-            //if (cur[0] === 7) {
-            //    console.log(direction)
-            //    console.log(gameObject)
-            //    console.log(cur)
-            //    alert(direction + ' ' + gameObject)
-            //}
 
-            //console.log(gameObject.column);
             return cur;
         }
 
@@ -626,18 +647,25 @@ window.onload = function () {
                 self.gate_layer = gameAssetsBuilder.getLayer();
                 self.bomb_layer = gameAssetsBuilder.getLayer();
                 self.coin_layer = gameAssetsBuilder.getLayer();
+                self.fire_layer = gameAssetsBuilder.getLayer();
                 self.coins = [];
-                self.paths = [];
                 self.stones = [];
                 self.enemies = [];
+                self.fires = [];
+                self.bombs = [];
+                self.background = gameAssetsBuilder.getBackground();
+                self.path_layer.add(self.background.sprite);
+                self.background.sprite.start();
 
-                self.stage.add(self.gate_layer.layer);
+
                 self.stage.add(self.path_layer.layer);
+                self.stage.add(self.gate_layer.layer);
                 self.stage.add(self.stone_layer.layer);
                 self.stage.add(self.player_layer.layer);
                 self.stage.add(self.enemies_layer.layer);
                 self.stage.add(self.bomb_layer.layer);
                 self.stage.add(self.coin_layer.layer);
+                self.stage.add(self.fire_layer.layer);
 
                 buildField(this, grid);
 
@@ -648,46 +676,45 @@ window.onload = function () {
         Object.defineProperty(game, 'player_move', {
 
             value: function (direction) {
-                var canMove = helpers.isPossiblePlayerMove(direction, this.player, this.grid, this.gate.locked);
+                var that = this;
+                var canMove = helpers.isPossiblePlayerMove(direction, that.player, that.grid, that.gate.locked);
                 if (canMove) {
 
-                    var that = this;
                     //previous row and column position of the player
                     var prev = [this.player.row, this.player.column];
                     // new row and column position of the player
                     var cur = moveGameObject(direction, this.player, this.grid);
                     this.player_layer.draw();
 
-                    //// update the grid matrix values
-                    //switch (that.grid[cur[0]][cur[1]]) {
-                    //    case 'e':
-                    //        that.remove_life();
-                    //        that.grid[cur[0]][cur[1]] = 'b';
-                    //        that.bomb_layer.draw();
-                    //        break;
-                    //    case 'g':
-                    //        that.endTime = Math.floor(Date.now() / 1000);
-                    //        alert('Level Completed');
-                    //        that.timeCompleted = that.endTime - that.startTime;
-                    //        console.log('complete for ' + that.timeCompleted + ' seconds ');
-                    //        break;
-                    //    default:
-                    //        that.grid[cur[0]][cur[1]] = 'p';
-                    //}
+                    // update the grid matrix values
+                    switch (that.grid[cur[0]][cur[1]]) {
+                        case 'e':
+                            that.remove_life();
+                            that.grid[cur[0]][cur[1]] = 'b';
+                            that.bomb_layer.draw();
+                            break;
+                        case 'g':
+                            that.endTime = Math.floor(Date.now() / 1000);
+                            alert('Level Completed');
+                            that.timeCompleted = that.endTime - that.startTime;
+                            that.points += that.timeCompleted / 2;
+                            //console.log('complete for ' + that.timeCompleted + ' seconds ');
+                            //console.log('points: ' + that.points);
 
-                    if (this.grid[cur[0]][cur[1]] == 'e') {
-                        this.remove_life();
-                        //------------------------------------------------------------------------------------------------------------------
-                        this.grid[cur[0]][cur[1]] = 'b';
-                        this.bomb_layer.draw();
-                    } else if (this.grid[cur[0]][cur[1]] == 'g') {
-                        this.endTime = Math.floor(Date.now() / 1000);
-                        alert('Level Completed');
-                        this.timeCompleted = this.endTime - this.startTime;
-                        console.log('complete for ' + this.timeCompleted + ' seconds ');
-                    } else {
-                        this.grid[cur[0]][cur[1]] = 'p';
+                            break;
+                        case 'c':
+                            that.points += 10;
+                            console.log(that.coins)
+                            var index = helpers.getIndexOf(that.coins, cur[0], cur[1]);
+                            var coin = that.coins[index];
+                            coin.sprite.remove();
+                            that.coin_layer.draw();
+                            that.coins.splice(index, 1);
+
+                        default:
+                            that.grid[cur[0]][cur[1]] = 'p';
                     }
+
                     if (this.grid[prev[0]][prev[1]] == 'p') {
                         this.grid[prev[0]][prev[1]] = '=';
                     }
@@ -702,7 +729,7 @@ window.onload = function () {
 
                 this.enemies.forEach(function (enemy) {
                     var prev = [enemy.row, enemy.column];
-                    console.log('prev before' + prev + ' ' + enemy.id);
+                   // console.log('prev before' + prev + ' ' + enemy.id);
 
                     var canMove = helpers.isPossiblePlayerMove(enemy.direction, enemy, that.grid, that.gate.locked);
                     if (canMove) {
@@ -716,7 +743,7 @@ window.onload = function () {
 
                         if (prev[0] == 7) {
 
-                            console.log(enemy)
+                          //  console.log(enemy)
                         }
                         // console.log(that.grid);
                         if (that.grid[prev[0]][prev[1]] == 'e') {
@@ -726,7 +753,7 @@ window.onload = function () {
                         enemy.change_direction(that.grid);
                     }
 
-                    console.log('prev after' + prev);
+                    //console.log('prev after' + prev);
                 });
 
 
@@ -748,17 +775,96 @@ window.onload = function () {
                     this.endTime = Math.floor(Date.now() / 1000);
                     this.timeCompleted = this.endTime - this.startTime;
                     //   console.log('complete for '+ this.timeCompleted + ' seconds ');
-                    alert('dead')
-
+                    this.points += this.timeCompleted / 2;
+                    //console.log('complete for ' + this.timeCompleted + ' seconds ');
+                    //console.log('points ' + this.points);
                     this.player_layer.draw();
                 } else {
                     this.player.row = 0;
                     this.player.column = 0;
-                    this.player.move({rol: 0, col: 0});
+                    this.player.move();
                     this.player_layer.draw();
                     this.grid[0][0] = 'p';
-                    //  console.log(this.grid);
                 }
+            }
+        });
+
+        Object.defineProperty(game, 'put_bomb', {
+            value: function () {
+                var that = this;
+
+                var newBomb = gameAssetsBuilder.getBomb(that.player.row, that.player.column),
+                    positionOfBomb = [that.player.row, that.player.column];
+
+                newBomb.start();
+
+                that.bomb_layer.add(newBomb.sprite);
+                that.bombs.push(newBomb);
+                that.bomb_layer.draw();
+                //console.log(this.bomb_layer);
+
+                setTimeout(function () {
+                    that.bombs[0].sprite.remove();
+                    that.bombs.shift();
+                    that.bomb_layer.draw();
+
+                }, 3000);
+
+                setTimeout(function () {
+                    that.show_fire(positionOfBomb);
+                }, 2000)
+
+
+                //this.grid[positionOfBomb[0]][positionOfBomb[1]]='b';
+                /*                    for (var i = 0; i < this.grid.length; i += 1) {
+                 console.log(this.grid[i])
+                 }*/
+
+                return this;
+            }
+        });
+
+        Object.defineProperty(game, 'perform_fire_objects', {
+            value: function (fireObjPosition) {
+                var fireObj = gameAssetsBuilder.getFire(fireObjPosition[0], fireObjPosition[1]);
+                //console.log(game);
+                this.fire_layer.add(fireObj.sprite);
+                fireObj.sprite.start();
+                this.fires.push(fireObj);
+            }
+        });
+
+        Object.defineProperty(game, 'show_fire', {
+            value: function (positionOfBomb) {
+                var NUMBER_OF_FIRE_OBJECTS = 4;
+                var that = this;
+                var positionsOfFireUp = [positionOfBomb[0], positionOfBomb[1] - 1];
+                var positionsOfFireDown = [positionOfBomb[0], positionOfBomb[1] + 1];
+                var positionsOfFireLeft = [positionOfBomb[0] - 1, positionOfBomb[1]];
+                var positionsOfFireRight = [positionOfBomb[0] + 1, positionOfBomb[1]];
+
+                this.perform_fire_objects(positionsOfFireUp);
+                this.perform_fire_objects(positionsOfFireDown);
+                this.perform_fire_objects(positionsOfFireLeft);
+                this.perform_fire_objects(positionsOfFireRight);
+
+                this.fire_layer.draw();
+
+                setTimeout(function () {
+                    that.fires[0].sprite.remove();
+                    that.fires[1].sprite.remove();
+                    that.fires[2].sprite.remove();
+                    that.fires[3].sprite.remove();
+                    that.fires.shift();
+                    that.fires.shift();
+                    that.fires.shift();
+                    that.fires.shift();
+
+                    that.fire_layer.draw();
+                    that.stone_layer.draw();
+                }, 1000);
+
+                return this;
             }
         });
 
@@ -785,6 +891,7 @@ window.onload = function () {
         setInterval(function () {
             newGame.enemy_move();
             bar.updateLives(newGame.lives)
+            bar.updateIce(newGame.points)
             // console.log(game.enemies)
             // console.log('--------------------------');
             //
@@ -797,15 +904,17 @@ window.onload = function () {
         }, 1000);
 
         window.onkeydown = function (ev) {
-            if (ev.keyCode === 38) {
+            if (ev.keyCode === 38 || ev.keyCode === 87) {
                 game.player_move('up');
             }
-            else if (ev.keyCode === 37) {
+            else if (ev.keyCode === 37 || ev.keyCode === 65) {
                 game.player_move('left');
-            } else if (ev.keyCode === 39) {
+            } else if (ev.keyCode === 39 || ev.keyCode === 68) {
                 game.player_move('right');
-            } else if (ev.keyCode === 40) {
+            } else if (ev.keyCode === 40 || ev.keyCode === 83) {
                 game.player_move('down');
+            } else if (ev.keyCode === 32) {
+                game.put_bomb();
             }
         };
     }
