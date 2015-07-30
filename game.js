@@ -9,11 +9,11 @@ window.onload = function () {
             FIELD_COLS: 9,
             SPRITES_FRAME_RATE: 6,
             SCALE: 0.5,
-            POINTS_GAINED_STONE: 10,
-            POINTS_GAINED_ENEMY: 20,
-            POINTS_GAINED_COINS: 20,
+            POINTS_GAINED_STONE: 0,
+            POINTS_GAINED_ENEMY: 50,
+            POINTS_GAINED_COINS: 50,
             POINTS_GAINED_GATE: 100,
-            POINTS_REMOVE_LIVE: -30
+            POINTS_REMOVE_LIVE: -100
         },
         sprites = {
             player: animationPlayer,
@@ -668,7 +668,7 @@ window.onload = function () {
                 self.background = gameAssetsBuilder.getBackground();
                 self.path_layer.add(self.background.sprite);
                 self.background.sprite.start(),
-                self.gameOver = false;
+                    self.gameOver = false;
 
 
                 self.stage.add(self.path_layer.layer);
@@ -704,13 +704,14 @@ window.onload = function () {
                     switch (that.grid[cur[0]][cur[1]]) {
                         case 'e':
                             that.remove_life();
-                           // that.grid[cur[0]][cur[1]] = 'b';
+                            // that.grid[cur[0]][cur[1]] = 'b';
                             that.bomb_layer.draw();
                             break;
                         case 'g':
                             that.endTime = Math.floor(Date.now() / 1000);
-                            alert('Level Completed');
+                            alert('Level Completed ' + that.points + ' ' + that.maxLevelPoints);
                             that.timeCompleted = that.endTime - that.startTime;
+                            that.points += CONSTANTS.POINTS_GAINED_GATE;
                             that.points += that.timeCompleted / 2;
                             //console.log('complete for ' + that.timeCompleted + ' seconds ');
                             //console.log('points: ' + that.points);
@@ -751,7 +752,7 @@ window.onload = function () {
 
                         if (that.grid[cur[0]][cur[1]] == 'p') {
                             that.remove_life();
-                        } else if(that.grid[cur[0]][cur[1]] == '=') {
+                        } else if (that.grid[cur[0]][cur[1]] == '=') {
 
                             that.grid[cur[0]][cur[1]] = 'e';
                         }
@@ -786,7 +787,7 @@ window.onload = function () {
                 if (this.lives <= 0) {
 
                     this.gameOver = true;
-                    if(this.lives < 0){
+                    if (this.lives < 0) {
                         this.lives = 0;
                     }
 
@@ -801,7 +802,7 @@ window.onload = function () {
                     this.player_layer.draw();
                 } else {
                     this.points += CONSTANTS.POINTS_REMOVE_LIVE;
-                    if(this.points < 0){
+                    if (this.points < 0) {
                         this.points = 0;
                     }
                     this.player.row = 0;
@@ -821,9 +822,8 @@ window.onload = function () {
                 var newBomb = gameAssetsBuilder.getBomb(that.player.row, that.player.column),
                     positionOfBomb = [that.player.row, that.player.column];
 
-                newBomb.start();
-
                 that.bomb_layer.add(newBomb.sprite);
+                newBomb.start();
                 that.bombs.push(newBomb);
                 that.bomb_layer.draw();
                 //console.log(this.bomb_layer);
@@ -863,10 +863,10 @@ window.onload = function () {
             value: function (positionOfBomb) {
                 var NUMBER_OF_FIRE_OBJECTS = 4;
                 var that = this;
-                var positionsOfFireUp = [positionOfBomb[0], positionOfBomb[1] - 1];
-                var positionsOfFireDown = [positionOfBomb[0], positionOfBomb[1] + 1];
-                var positionsOfFireLeft = [positionOfBomb[0] - 1, positionOfBomb[1]];
-                var positionsOfFireRight = [positionOfBomb[0] + 1, positionOfBomb[1]];
+                var positionsOfFireUp = [positionOfBomb[0] - 1, positionOfBomb[1]];
+                var positionsOfFireDown = [positionOfBomb[0] + 1, positionOfBomb[1]];
+                var positionsOfFireLeft = [positionOfBomb[0], positionOfBomb[1] - 1];
+                var positionsOfFireRight = [positionOfBomb[0], positionOfBomb[1] + 1];
 
                 this.perform_fire_objects(positionsOfFireUp);
                 this.perform_fire_objects(positionsOfFireDown);
@@ -902,23 +902,25 @@ window.onload = function () {
 
         Object.defineProperty(game, 'kill_creatures_in_the_range', {
             value: function (killingCoordinates) {
-                for (var i = 0; i < this.enemies.length; i += 1) {
-                    if (this.enemies[i].column == killingCoordinates[0]
-                        && this.enemies[i].row == killingCoordinates[1]) {
-                        this.enemies[i].sprite.remove();
-                        this.enemies.splice(i, 1);
-                        this.grid[killingCoordinates[1]][killingCoordinates[0]] = '=';
-                        this.points += CONSTANTS.POINTS_GAINED_ENEMY;
+                var that = this;
+
+                for (var i = 0; i < that.enemies.length; i += 1) {
+                    if (that.enemies[i].row == killingCoordinates[0]
+                        && that.enemies[i].column == killingCoordinates[1]) {
+                        that.enemies[i].sprite.remove();
+                        that.enemies.splice(i, 1);
+                        that.grid[killingCoordinates[0]][killingCoordinates[1]] = '=';
+                        that.points += CONSTANTS.POINTS_GAINED_ENEMY;
                         //this.path_layer.draw();
                     }
                 }
 
-                console.log(this.player.column==killingCoordinates[0])
-                console.log(this.player.column==killingCoordinates[1])
+                console.log(that.player.column == killingCoordinates[0])
+                console.log(that.player.column == killingCoordinates[1])
 
 
-                if(this.player.column==killingCoordinates[0] && this.player.row == killingCoordinates[1]){
-                    this.remove_life();
+                if (that.player.row == killingCoordinates[0] && this.player.column == killingCoordinates[1]) {
+                    that.remove_life();
                 }
             }
         });
@@ -943,16 +945,19 @@ window.onload = function () {
         var bar = Object.create(topBarSVG)
             .init('svg-container', newGame.grid[0].length * CONSTANTS.CELL_DIMENSIONS, newGame.grid.length * CONSTANTS.CELL_DIMENSIONS);
         var canUpdareTopBar = false;
+
         setTimeout(function () {
             canUpdareTopBar = true;
         }, 3000);
 
-       var gameLoop =  setInterval(function () {
+        var gameLoop = setInterval(function () {
             newGame.enemy_move();
+
             if (canUpdareTopBar) {
                 bar.updateLives(newGame.lives);
                 bar.updateIce(newGame.points);
-                bar.updateRatioBars(game.points, game.maxLevelPoints);            }
+                bar.updateRatioBars(game.points, game.maxLevelPoints);
+            }
 
             console.log(game.enemies);
             console.log('--------------------------');
@@ -963,18 +968,17 @@ window.onload = function () {
 
             console.log('--------------------------');
 
-            if(newGame.gameOver){
+            if (newGame.gameOver) {
                 stopGameLoop();
-                //alert('stop')
+                alert('burned')
             }
 
         }, 1000);
 
 
-        function stopGameLoop(){
+        function stopGameLoop() {
             clearInterval(gameLoop)
         }
-
 
 
         window.onkeydown = function (ev) {
