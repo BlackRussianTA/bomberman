@@ -15,13 +15,14 @@ var topBarSVG = (function () {
         return Raphael(containerID, width, height);
     }
 
-    function calculatePercentageRatio(firstValue, secondValue) {
-        var totalParts = +firstValue + secondValue,
-            singlePart = 1 / totalParts;
+    function calculatePercentageRatio(currentPoints, maxPoints) {
+        var singlePart = 1 / maxPoints,
+            currentPointsParts = currentPoints * singlePart,
+            restParts = 1 - currentPointsParts;
 
         return {
-            firstValueParts: singlePart * firstValue,
-            secondValueParts: singlePart * secondValue
+            currentPointsParts: currentPointsParts,
+            restParts: restParts
         }
     }
 
@@ -336,10 +337,10 @@ var topBarSVG = (function () {
         value: function (iceCount, fireCount) {
             var self = this,
                 ratio = calculatePercentageRatio(iceCount, fireCount),
-                icePart = ratio.firstValueParts,
-                firePart = ratio.secondValueParts,
-                icePartWidth = calculatePartWidth(icePart, self._dimensions),
-                firePartWidth = calculatePartWidth(firePart, self._dimensions);
+                currentPointsParts = ratio.currentPointsParts,
+                restParts = ratio.restParts,
+                icePartWidth = calculatePartWidth(currentPointsParts, self._dimensions),
+                firePartWidth = calculatePartWidth(restParts, self._dimensions);
 
             self._iceAndFireRatioBars.icePointsBar.animate({
                 width: icePartWidth
@@ -350,16 +351,16 @@ var topBarSVG = (function () {
             }, 1000);
 
             self._iceAndFireRatioBars.firePointsBar.animate({
-                x: calculateFireBarX(firePart, self._dimensions),
+                x: calculateFireBarX(restParts, self._dimensions),
                 width: firePartWidth
             }, 1000);
 
             self._iceAndFIreRectsAndPercentage.icePointsText.attr({
-                text: Math.round(icePart * 100)
+                text: Math.round(currentPointsParts * 100)
             });
 
             self._iceAndFIreRectsAndPercentage.firePointsText.attr({
-                text: Math.round(firePart * 100)
+                text: Math.round(restParts * 100)
             });
         }
     });

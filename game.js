@@ -8,7 +8,11 @@ window.onload = function () {
             FIELD_ROLLS: 7,
             FIELD_COLS: 9,
             SPRITES_FRAME_RATE: 6,
-            SCALE: 0.5
+            SCALE: 0.5,
+            POINTS_GAINED_STONE: 10,
+            POINTS_GAINED_ENEMY: 20,
+            POINTS_GAINED_COINS: 20,
+            POINTS_GAINED_GATE: 100
         },
         sprites = {
             player: animationPlayer,
@@ -475,6 +479,7 @@ window.onload = function () {
 
                     self.sprite.image(backgroundImage);
                     self.sprite.frameRate(24);
+                    self.sprite.scale({x: 1, y: 1});
 
                     return this;
                 }
@@ -549,6 +554,7 @@ window.onload = function () {
                             g.stone_layer.add(newStone.sprite);
                             newStone.start();
                             g.stones.push(newStone);
+                            g.maxLevelPoints += CONSTANTS.POINTS_GAINED_STONE;
                             break;
                         case gameObjectType.player:
                             var newPlayer = gameAssetsBuilder.getPlayer(r, c);
@@ -560,18 +566,21 @@ window.onload = function () {
                             //console.log(r)
                             //console.log(c)
 
+
                             break;
                         case gameObjectType.coin:
                             var newCoin = gameAssetsBuilder.getCoin(r, c);
                             g.coin_layer.add(newCoin.sprite);
                             newCoin.start();
                             g.coins.push(newCoin);
+                            g.maxLevelPoints += CONSTANTS.POINTS_GAINED_COINS;
                             break;
                         case gameObjectType.enemy:
                             var newEnemy = gameAssetsBuilder.getEnemy(r, c);
                             g.enemies_layer.add(newEnemy.sprite);
                             newEnemy.start();
                             g.enemies.push(newEnemy);
+                            g.maxLevelPoints += CONSTANTS.POINTS_GAINED_ENEMY;
                             //console.log(newEnemy)
                             //console.log(c)
                             break;
@@ -580,6 +589,7 @@ window.onload = function () {
                             g.gate_layer.add(newGate.sprite);
                             newGate.start();
                             g.gate = newGate;
+                            g.maxLevelPoints += CONSTANTS.POINTS_GAINED_GATE;
                             break;
                     }
                 }
@@ -633,13 +643,14 @@ window.onload = function () {
                 var self = this;
                 self.grid = grid;
                 self.stage = gameAssetsBuilder.getStage(CONSTANTS.CANVAS_ID,
-                    CONSTANTS.FIELD_COLS * CONSTANTS.CELL_DIMENSIONS,
-                    CONSTANTS.FIELD_ROLLS * CONSTANTS.CELL_DIMENSIONS);
+                    grid[0].length * CONSTANTS.CELL_DIMENSIONS,
+                    grid.length * CONSTANTS.CELL_DIMENSIONS);
                 self.startTime = Math.floor(Date.now() / 1000);
                 self.endTime = -1;
                 self.timeCompleted = 0;
                 self.lives = 3;
                 self.points = 0;
+                self.maxLevelPoints = 0;
                 self.player_layer = gameAssetsBuilder.getLayer();
                 self.enemies_layer = gameAssetsBuilder.getLayer();
                 self.path_layer = gameAssetsBuilder.getLayer();
@@ -660,12 +671,13 @@ window.onload = function () {
 
                 self.stage.add(self.path_layer.layer);
                 self.stage.add(self.gate_layer.layer);
-                self.stage.add(self.stone_layer.layer);
+                self.stage.add(self.fire_layer.layer);
                 self.stage.add(self.player_layer.layer);
                 self.stage.add(self.enemies_layer.layer);
                 self.stage.add(self.bomb_layer.layer);
                 self.stage.add(self.coin_layer.layer);
-                self.stage.add(self.fire_layer.layer);
+                self.stage.add(self.stone_layer.layer);
+
 
                 buildField(this, grid);
 
@@ -703,7 +715,7 @@ window.onload = function () {
 
                             break;
                         case 'c':
-                            that.points += 10;
+                            that.points += CONSTANTS.POINTS_GAINED_COINS;
                             console.log(that.coins)
                             var index = helpers.getIndexOf(that.coins, cur[0], cur[1]);
                             var coin = that.coins[index];
@@ -729,7 +741,7 @@ window.onload = function () {
 
                 this.enemies.forEach(function (enemy) {
                     var prev = [enemy.row, enemy.column];
-                   // console.log('prev before' + prev + ' ' + enemy.id);
+                    // console.log('prev before' + prev + ' ' + enemy.id);
 
                     var canMove = helpers.isPossiblePlayerMove(enemy.direction, enemy, that.grid, that.gate.locked);
                     if (canMove) {
@@ -743,7 +755,7 @@ window.onload = function () {
 
                         if (prev[0] == 7) {
 
-                          //  console.log(enemy)
+                            //  console.log(enemy)
                         }
                         // console.log(that.grid);
                         if (that.grid[prev[0]][prev[1]] == 'e') {
@@ -901,31 +913,41 @@ window.onload = function () {
     function initGame() {
 
         var gameSet = [
-            ['=', 'p', '+', '+', '=', '+', '+', '=', '='],
-            ['+', '=', '+', '+', '=', '+', '+', 'e', '+'],
-            ['+', 'c', '=', '=', '=', '+', '+', '=', '='],
-            ['=', '=', '+', '=', 'e', '=', '=', '=', '+'],
-            ['c', 'c', '+', '+', '=', '+', '+', '=', '+'],
-            ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
-            ['=', 'e', '+', '+', '=', '+', '+', '=', 'g']
+            ['=', 'p', '+', '+', '=','=', '+', '+', '=', '='],
+            ['+', '=', '+', '+', '=','=', '+', '+', 'e', '+'],
+            ['+', 'c', '=', '=', '=','=', '+', '+', '=', '='],
+            ['=', '=', '+', '=', 'e','=', '=', '=', '=', '+'],
+            ['c', 'c', '+', '+', '=','e', '+', '+', '=', '+'],
+            ['=', '=', '+', '+', '=','=', '+', '+', '=', '+'],
+            ['=', 'e', '+', '+', '=','=', '+', '+', '=', 'g'],
+            ['=', 'e', '+', '+', '=','=', '+', '+', '=', 'g'],
+            ['=', 'e', '+', '+', '=','=', '+', '+', '=', 'g']
         ];
 
         var newGame = game.init(gameSet);
         var bar = Object.create(topBarSVG)
-            .init('svg-container', CONSTANTS.FIELD_COLS * CONSTANTS.CELL_DIMENSIONS, CONSTANTS.FIELD_COLS * CONSTANTS.CELL_DIMENSIONS);
+            .init('svg-container', newGame.grid[0].length * CONSTANTS.CELL_DIMENSIONS, newGame.grid.length * CONSTANTS.CELL_DIMENSIONS);
+        var canUpdareTopBar = false;
+        setTimeout(function () {
+            canUpdareTopBar = true;
+        }, 3000);
 
         setInterval(function () {
             newGame.enemy_move();
-            bar.updateLives(newGame.lives)
-            bar.updateIce(newGame.points)
-            // console.log(game.enemies)
-            // console.log('--------------------------');
-            //
-            // for (var i = 0; i < 7; i++) {
-            //     console.log(newGame.grid[i]);
-            // }
+            if (canUpdareTopBar) {
+                bar.updateLives(newGame.lives);
+                bar.updateIce(newGame.points);
+                bar.updateRatioBars(game.points, game.maxLevelPoints);
+            }
 
-            //  console.log('--------------------------');
+            console.log(game.enemies);
+            console.log('--------------------------');
+
+            for (var i = 0; i < 7; i++) {
+                console.log(newGame.grid[i]);
+            }
+
+            console.log('--------------------------');
 
         }, 1000);
 
