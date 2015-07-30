@@ -1,5 +1,5 @@
 // ------------------------------------------- GAME ----------------------------------------------
-window.onload = function () {
+var startGame= function () {
     var CONSTANTS_GLOBAL = {
             SPRITE_IMAGE_PATH: 'images/Players/sprite-sheet.png'
         },
@@ -958,6 +958,8 @@ window.onload = function () {
 
             if (newGame.gameOver) {
                 stopGameLoop();
+                getHighScore(newGame.points);
+                showFinalScreen();
                 //SOME FUNC TO CALL GAME MENU
             }
 
