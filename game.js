@@ -74,7 +74,7 @@ window.onload = function () {
 
     setTimeout(initGame, 1000);
 
-    var common = (function () {
+    var helpers = (function () {
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -138,14 +138,14 @@ window.onload = function () {
 
         function getRandomDirection() {
             var moves = [DIRECTIONS.left, DIRECTIONS.right, DIRECTIONS.up, DIRECTIONS.down];
-            var move = common.getRandomInt(0, 3);
+            var move = helpers.getRandomInt(0, 3);
 
             return moves[move];
         }
 
         function getRandomEnemyAnimation() {
             var states = ['enemySun', 'enemyHedgehog'];
-            var state = common.getRandomInt(0, 1);
+            var state = helpers.getRandomInt(0, 1);
 
             return sprites[states[state]];
         }
@@ -164,22 +164,23 @@ window.onload = function () {
                     self.id = ++nextID;
 
                     self.sprite = new Kinetic.Sprite({
-                        x: initialRow * CONSTANTS.CELL_DIMENSIONS,
-                        y: initialCol * CONSTANTS.CELL_DIMENSIONS,
+                        x: self.column * CONSTANTS.CELL_DIMENSIONS,
+                        y: self.row * CONSTANTS.CELL_DIMENSIONS,
                         image: spriteImage,
                         animations: animations,
                         animation: startAnimation,
                         frameRate: CONSTANTS.SPRITES_FRAME_RATE,
                         frame: 0
                     });
-                    self.sprite.scale({x: CONSTANTS.SCALE, y: CONSTANTS.SCALE});
+
+                    self.sprite.scale({x:  CONSTANTS.SCALE, y: CONSTANTS.SCALE });
 
                     return self;
                 }
             });
 
             Object.defineProperty(gameObject, 'start', {
-                value: function (initialX, initialY, startAnimation, animations) {
+                value: function () {
                     this.sprite.start();
 
                     return this;
@@ -187,12 +188,9 @@ window.onload = function () {
             });
 
             Object.defineProperty(gameObject, 'move', {
-                value: function (direction) {
-                    this.sprite.setY(direction.row * CONSTANTS.CELL_DIMENSIONS);
-                    this.sprite.setX(direction.col * CONSTANTS.CELL_DIMENSIONS);
-
-                    //console.log(direction.row * CONSTANTS.CELL_DIMENSIONS)
-                    //console.log(direction.col * CONSTANTS.CELL_DIMENSIONS)
+                value: function () {
+                    this.sprite.y(this.row * CONSTANTS.CELL_DIMENSIONS);
+                    this.sprite.x(this.column * CONSTANTS.CELL_DIMENSIONS);
 
                     return this;
                 }
@@ -257,27 +255,29 @@ window.onload = function () {
             var player = Object.create(parent);
 
             Object.defineProperty(player, 'init', {
-                value: function (initialRow, initialCol, startAnimation) {
+                value: function (initialRow, initialCol, startAnimation, animations) {
                     var self = this;
-                    var animation = getRandomEnemyAnimation();
+                    // var animation = getRandomEnemyAnimation();
 
-                    parent.init.call(self, initialRow, initialCol, startAnimation, animation, gameObjectType.enemy);
+                    console.log('row =-' + initialRow + ' col  ' + initialCol);
 
-                    this.direction = getRandomDirection();
+                    parent.init.call(self, initialRow, initialCol, startAnimation, animations, gameObjectType.player);
+
+                    //this.direction = getRandomDirection();
                     //console.log(this.direction);
 
                     return this;
                 }
             });
 
-            Object.defineProperty(player, 'direction', {
-                get: function () {
-                    return this._direction;
-                },
-                set: function (value) {
-                    this._direction = value;
-                }
-            });
+            //Object.defineProperty(player, 'direction', {
+            //    get: function () {
+            //        return this._direction;
+            //    },
+            //    set: function (value) {
+            //        this._direction = value;
+            //    }
+            //});
 
             return player;
 
@@ -317,10 +317,12 @@ window.onload = function () {
                 value: function (grid) {
                     var oldDirection = this.direction;
                     var moves = ['left', 'right', 'up', 'down'];
-                    var move = common.getRandomInt(0, 3);
+                    var move = helpers.getRandomInt(0, 3);
 
-                    while (oldDirection == moves[move] && common.isPossiblePlayerMove(moves[move], this, grid, true) == false) {
-                        move = common.getRandomInt(0, 3);
+                    //console.log('possible ' + helpers.isPossiblePlayerMove(moves[move], this, grid, true));
+
+                    while (oldDirection == moves[move] && helpers.isPossiblePlayerMove(moves[move], this, grid, true) == false) {
+                        move = helpers.getRandomInt(0, 3);
                         //console.log(move)
                     }
 
@@ -421,6 +423,14 @@ window.onload = function () {
                 }
             });
 
+            Object.defineProperty(layer, 'remove', {
+                value: function (value) {
+                    this._layer.remove(value);
+
+                    return this;
+                }
+            });
+
             Object.defineProperty(layer, 'layer', {
                 get: function () {
                     return this._layer;
@@ -444,23 +454,29 @@ window.onload = function () {
             getLayer: function () {
                 return Object.create(layer).init();
             },
-            getPlayer: function (x, y) {
-                return Object.create(gameObject).init(x, y, animationStates.idle, sprites.player, gameObjectType.player);
+            getPlayer: function (row, col) {
+                return Object.create(player).init(row, col, animationStates.idle, sprites.player);
             },
-            getEnemy: function (x, y) {
-                return Object.create(enemy).init(x, y, animationStates.move);
+            getEnemy: function (row, col) {
+                return Object.create(enemy).init(row, col, animationStates.move);
             },
-            getStone: function (x, y) {
-                return Object.create(gameObject).init(x, y, animationStates.stone, sprites.stone, gameObjectType.stone);
+            getStone: function (row, col) {
+                return Object.create(gameObject).init(row, col, animationStates.stone, sprites.stone, gameObjectType.stone);
             },
-            getBrick: function (x, y) {
-                return Object.create(gameObject).init(x, y, animationStates.brick, sprites.brick, gameObjectType.brick);
+            getBrick: function (row, col) {
+                return Object.create(gameObject).init(row, col, animationStates.brick, sprites.brick, gameObjectType.brick);
             },
-            getGate: function (x, y) {
-                return Object.create(gate).init(x, y, animationStates.locked, sprites.gate);
+            getGate: function (row, col) {
+                return Object.create(gate).init(row, col, animationStates.locked, sprites.gate);
             },
-            getPath: function (x, y) {
-                return Object.create(gameObject).init(x, y, animationStates.idle, sprites.empty, gameObjectType.empty);
+            getPath: function (row, col) {
+                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.empty, gameObjectType.empty);
+            },
+            getCoin: function (row, col) {
+                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.ice, gameObjectType.coin);
+            },
+            getBomb: function (row, col) {
+                return Object.create(gameObject).init(row, col, animationStates.idle, sprites.empty, gameObjectType.empty);
             }
         };
     }());
@@ -472,89 +488,70 @@ window.onload = function () {
         var game = Object.create({});
 
         function buildField(g, grid) {
-            grid.forEach(function (row, r) {
-                row.forEach(function (val, c) {
+            var r ,
+                c,
+                lenRows = grid.length,
+                lenCols = grid[0].length,
+                val;
+
+            for (r = 0; r < lenRows ; r += 1) {
+                for (c = 0; c < lenCols; c += 1) {
+                    val = grid[r][c];
+
                     switch (val) {
                         case gameObjectType.empty:
-                            var newPath = gameAssetsBuilder.getPath(c, r);
+                            var newPath = gameAssetsBuilder.getPath(r, c);
                             g.path_layer.add(newPath.sprite);
                             newPath.start();
                             g.paths.push(newPath);
                             break;
                         case gameObjectType.stone:
-                            var newStone = gameAssetsBuilder.getStone(c, r);
+                            var newStone = gameAssetsBuilder.getStone(r, c);
                             g.stone_layer.add(newStone.sprite);
                             newStone.start();
                             g.stones.push(newStone);
                             break;
                         case gameObjectType.player:
-                            var newPath = gameAssetsBuilder.getPath(c, r);
+                            var newPath = gameAssetsBuilder.getPath(r, c);
                             g.path_layer.add(newPath.sprite);
                             g.paths.push(newPath);
-                            var newPlayer = gameAssetsBuilder.getPlayer(c, r);
+                            var newPlayer = gameAssetsBuilder.getPlayer(r, c);
                             g.player_layer.add(newPlayer.sprite);
                             newPlayer.start();
                             g.player = newPlayer;
+
+                            console.log(newPlayer)
+                            console.log(r)
+                            console.log(c)
+
+                            break;
+                        case gameObjectType.coin:
+                            var newCoin = gameAssetsBuilder.getCoin(r, c);
+                            g.coin_layer.add(newCoin.sprite);
+                            newCoin.start();
+                            g.gate = newCoin;
                             break;
                         case gameObjectType.enemy:
-                            var newPath = gameAssetsBuilder.getPath(c, r);
+                            var newPath = gameAssetsBuilder.getPath(r, c);
                             g.path_layer.add(newPath.sprite);
                             g.paths.push(newPath);
-                            var newEnemy = gameAssetsBuilder.getEnemy(c, r);
+                            var newEnemy = gameAssetsBuilder.getEnemy(r, c);
                             g.enemies_layer.add(newEnemy.sprite);
                             newEnemy.start();
                             g.enemies.push(newEnemy);
+                            console.log(newEnemy)
+                            console.log(c)
                             break;
                         case gameObjectType.gate:
-                            var newGate = gameAssetsBuilder.getGate(c, r);
+                            var newGate = gameAssetsBuilder.getGate(r, c);
                             g.gate_layer.add(newGate.sprite);
                             newGate.start();
                             g.gate = newGate;
-                            break
-                    }
-                });
-            });
-        }
+                            break;
 
-        function getNextGridElem(direction, position, grid) {
-            var type = -1;
-            switch (direction) {
-                case 'right':
-                    if (grid[position[0]] && grid[position[0]][position[1] + 1]) {
-                        type = grid[position[0]][position[1] + 1];
                     }
-                    break;
-                case 'left':
-                    if (grid[position[0]] && grid[position[0]][position[1] - 1]) {
-                        type = grid[position[0]][position[1] - 1];
-                    }
-                    break;
-                case 'down':
-                    if (grid[position[0] + 1] && grid[position[0] + 1][position[1]]) {
-                        type = grid[position[0] + 1][position[1]];
-                    }
-                    break;
-                case 'up':
-                    if (grid[position[0] - 1] && grid[position[0] - 1][position[1]]) {
-                        type = grid[position[0] - 1][position[1]];
-                    }
-
-                    break;
+                }
             }
-
-            return type;
-        }
-
-        function isPossiblePlayerMove(direction, gameObject, grid, gate_status) {
-            var nextGridElem = getNextGridElem(direction, [gameObject.row, gameObject.column], grid);
-            if (nextGridElem == 'g' && gate_status === false) {
-                return true;
-            }
-            if (nextGridElem !== -1 && nextGridElem != '+') {
-                return true;
-            }
-
-            return false;
         }
 
         function moveGameObject(direction, gameObject, grid) {
@@ -562,13 +559,13 @@ window.onload = function () {
 
             switch (direction) {
                 case DIRECTIONS.right:
-                    console.log(gameObject.column);
+                    //console.log(gameObject.column);
                     gameObject.column += 1;
                     cur = [gameObject.row, gameObject.column];
                     //move player
                     gameObject.move({row: gameObject.row, col: gameObject.column});
                     //update player's column
-                    console.log(gameObject.column);
+                    //console.log(gameObject.column);
 
                     break;
                 case DIRECTIONS.left:
@@ -595,8 +592,16 @@ window.onload = function () {
             }
             //console.log(player.row)
             //console.log(player.column)
-            //console.log(cur)
+            //console.log('curr in move' + cur)
+            ////console
+            //if (cur[0] === 7) {
+            //    console.log(direction)
+            //    console.log(gameObject)
+            //    console.log(cur)
+            //    alert(direction + ' ' + gameObject)
+            //}
 
+            //console.log(gameObject.column);
             return cur;
         }
 
@@ -609,12 +614,19 @@ window.onload = function () {
                 self.stage = gameAssetsBuilder.getStage(CONSTANTS.CANVAS_ID,
                     CONSTANTS.FIELD_COLS * CONSTANTS.CELL_DIMENSIONS,
                     CONSTANTS.FIELD_ROLLS * CONSTANTS.CELL_DIMENSIONS);
-
+                self.startTime = Math.floor(Date.now() / 1000);
+                self.endTime = -1;
+                self.timeCompleted = 0;
+                self.lives = 3;
+                self.points = 0;
                 self.player_layer = gameAssetsBuilder.getLayer();
                 self.enemies_layer = gameAssetsBuilder.getLayer();
                 self.path_layer = gameAssetsBuilder.getLayer();
                 self.stone_layer = gameAssetsBuilder.getLayer();
                 self.gate_layer = gameAssetsBuilder.getLayer();
+                self.bomb_layer = gameAssetsBuilder.getLayer();
+                self.coin_layer = gameAssetsBuilder.getLayer();
+                self.coins = [];
                 self.paths = [];
                 self.stones = [];
                 self.enemies = [];
@@ -624,6 +636,8 @@ window.onload = function () {
                 self.stage.add(self.stone_layer.layer);
                 self.stage.add(self.player_layer.layer);
                 self.stage.add(self.enemies_layer.layer);
+                self.stage.add(self.bomb_layer.layer);
+                self.stage.add(self.coin_layer.layer);
 
                 buildField(this, grid);
 
@@ -634,21 +648,43 @@ window.onload = function () {
         Object.defineProperty(game, 'player_move', {
 
             value: function (direction) {
-                var canMove = common.isPossiblePlayerMove(direction, this.player, this.grid, this.gate.locked);
-
+                var canMove = helpers.isPossiblePlayerMove(direction, this.player, this.grid, this.gate.locked);
                 if (canMove) {
 
+                    var that = this;
                     //previous row and column position of the player
                     var prev = [this.player.row, this.player.column];
                     // new row and column position of the player
                     var cur = moveGameObject(direction, this.player, this.grid);
                     this.player_layer.draw();
-                    // update the grid matrix values
+
+                    //// update the grid matrix values
+                    //switch (that.grid[cur[0]][cur[1]]) {
+                    //    case 'e':
+                    //        that.remove_life();
+                    //        that.grid[cur[0]][cur[1]] = 'b';
+                    //        that.bomb_layer.draw();
+                    //        break;
+                    //    case 'g':
+                    //        that.endTime = Math.floor(Date.now() / 1000);
+                    //        alert('Level Completed');
+                    //        that.timeCompleted = that.endTime - that.startTime;
+                    //        console.log('complete for ' + that.timeCompleted + ' seconds ');
+                    //        break;
+                    //    default:
+                    //        that.grid[cur[0]][cur[1]] = 'p';
+                    //}
 
                     if (this.grid[cur[0]][cur[1]] == 'e') {
-                        alert('Game Over');
-                    } else if(this.grid[cur[0]][cur[1]] == 'g'){
+                        this.remove_life();
+                        //------------------------------------------------------------------------------------------------------------------
+                        this.grid[cur[0]][cur[1]] = 'b';
+                        this.bomb_layer.draw();
+                    } else if (this.grid[cur[0]][cur[1]] == 'g') {
+                        this.endTime = Math.floor(Date.now() / 1000);
                         alert('Level Completed');
+                        this.timeCompleted = this.endTime - this.startTime;
+                        console.log('complete for ' + this.timeCompleted + ' seconds ');
                     } else {
                         this.grid[cur[0]][cur[1]] = 'p';
                     }
@@ -661,27 +697,68 @@ window.onload = function () {
 
         Object.defineProperty(game, 'enemy_move', {
 
-            value: function () {var that = this;
-                this.enemies.forEach(function(enemy){
+            value: function () {
+                var that = this;
+
+                this.enemies.forEach(function (enemy) {
                     var prev = [enemy.row, enemy.column];
+                    console.log('prev before' + prev + ' ' + enemy.id);
 
-                    var canMove = common.isPossiblePlayerMove(enemy.direction, enemy, that.grid,that.gate.locked);
+                    var canMove = helpers.isPossiblePlayerMove(enemy.direction, enemy, that.grid, that.gate.locked);
+                    if (canMove) {
+                        var cur = moveGameObject(enemy.direction, enemy, that.grid);
 
-                    if(canMove){
-                        var cur =  moveGameObject(enemy.direction, enemy, that.grid);
-                        that.enemies_layer.draw();
                         if (that.grid[cur[0]][cur[1]] == 'p') {
-                            alert('Game Over');
+                            that.remove_life();
                         } else {
                             that.grid[cur[0]][cur[1]] = 'e';
                         }
+
+                        if (prev[0] == 7) {
+
+                            console.log(enemy)
+                        }
+                        // console.log(that.grid);
                         if (that.grid[prev[0]][prev[1]] == 'e') {
                             that.grid[prev[0]][prev[1]] = '=';
                         }
                     } else {
                         enemy.change_direction(that.grid);
                     }
+
+                    console.log('prev after' + prev);
                 });
+
+
+                //  console.log('enemy_move')
+                that.enemies_layer.draw();
+            }
+        });
+
+        Object.defineProperty(game, 'remove_life', {
+
+            value: function () {
+                this.lives -= 1;
+                //  console.log('remaining lives: ' + this.lives);
+
+                if (this.lives < 0) {
+
+                    this.player_layer.layer.remove(this.player.sprite);
+                    //  console.log('game over');
+                    this.endTime = Math.floor(Date.now() / 1000);
+                    this.timeCompleted = this.endTime - this.startTime;
+                    //   console.log('complete for '+ this.timeCompleted + ' seconds ');
+                    alert('dead')
+
+                    this.player_layer.draw();
+                } else {
+                    this.player.row = 0;
+                    this.player.column = 0;
+                    this.player.move({rol: 0, col: 0});
+                    this.player_layer.draw();
+                    this.grid[0][0] = 'p';
+                    //  console.log(this.grid);
+                }
             }
         });
 
@@ -692,33 +769,42 @@ window.onload = function () {
     function initGame() {
 
         var gameSet = [
-            ['p', '=', '+', '+', '=', '+', '+', '=', '='],
-            ['+', '=', '+', '+', '=', '+', '+', '=', '+'],
-            ['+', '=', '=', '=', '=', '+', '+', '=', '='],
-            ['=', '=', '+', '=', '=', 'e', '=', '=', '+'],
+            ['=', 'p', '+', '+', '=', '+', '+', '=', '='],
+            ['+', '=', '+', '+', '=', '+', '+', 'e', '+'],
+            ['+', 'c', '=', '=', '=', '+', '+', '=', '='],
+            ['=', '=', '+', '=', 'e', '=', '=', '=', '+'],
+            ['c', 'c', '+', '+', '=', '+', '+', '=', '+'],
             ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
-            ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
-            ['=', 'e', '+', '+', '=', '+', '+', 'e', 'g']
+            ['=', 'e', '+', '+', '=', '+', '+', '=', 'g']
         ];
 
         var newGame = game.init(gameSet);
+        var bar = Object.create(topBarSVG)
+            .init('svg-container', CONSTANTS.FIELD_COLS * CONSTANTS.CELL_DIMENSIONS, CONSTANTS.FIELD_COLS * CONSTANTS.CELL_DIMENSIONS);
 
         setInterval(function () {
-            game.enemy_move();
+            newGame.enemy_move();
+            bar.updateLives(newGame.lives)
+            // console.log(game.enemies)
+            // console.log('--------------------------');
+            //
+            // for (var i = 0; i < 7; i++) {
+            //     console.log(newGame.grid[i]);
+            // }
 
-            console.log(game.grid)
+            //  console.log('--------------------------');
 
         }, 1000);
 
         window.onkeydown = function (ev) {
-            if (ev.keyCode === 38 || ev.keyCode === 87) {
+            if (ev.keyCode === 38) {
                 game.player_move('up');
             }
-            else if (ev.keyCode === 37 || ev.keyCode === 65) {
+            else if (ev.keyCode === 37) {
                 game.player_move('left');
-            } else if (ev.keyCode === 39 || ev.keyCode === 68) {
+            } else if (ev.keyCode === 39) {
                 game.player_move('right');
-            } else if (ev.keyCode === 40 || ev.keyCode === 83) {
+            } else if (ev.keyCode === 40) {
                 game.player_move('down');
             }
         };
