@@ -12,7 +12,8 @@ window.onload = function () {
             POINTS_GAINED_STONE: 10,
             POINTS_GAINED_ENEMY: 20,
             POINTS_GAINED_COINS: 20,
-            POINTS_GAINED_GATE: 100
+            POINTS_GAINED_GATE: 100,
+            POINTS_REMOVE_LIVE: -30
         },
         sprites = {
             player: animationPlayer,
@@ -666,7 +667,8 @@ window.onload = function () {
                 self.bombs = [];
                 self.background = gameAssetsBuilder.getBackground();
                 self.path_layer.add(self.background.sprite);
-                self.background.sprite.start();
+                self.background.sprite.start(),
+                self.gameOver = false;
 
 
                 self.stage.add(self.path_layer.layer);
@@ -702,7 +704,7 @@ window.onload = function () {
                     switch (that.grid[cur[0]][cur[1]]) {
                         case 'e':
                             that.remove_life();
-                            that.grid[cur[0]][cur[1]] = 'b';
+                           // that.grid[cur[0]][cur[1]] = 'b';
                             that.bomb_layer.draw();
                             break;
                         case 'g':
@@ -749,7 +751,8 @@ window.onload = function () {
 
                         if (that.grid[cur[0]][cur[1]] == 'p') {
                             that.remove_life();
-                        } else {
+                        } else if(that.grid[cur[0]][cur[1]] == '=') {
+
                             that.grid[cur[0]][cur[1]] = 'e';
                         }
 
@@ -774,55 +777,39 @@ window.onload = function () {
             }
         });
 
-
-        function sleep(miliseconds) {
-           var currentTime = new Date().getTime();
-
-           while (currentTime + miliseconds >= new Date().getTime()) {
-           }
-       }
-        
         Object.defineProperty(game, 'remove_life', {
 
             value: function () {
-                if (this.lives > 0) {
-                    this.lives -= 1;
-                }
-                
+                this.lives -= 1;
                 //  console.log('remaining lives: ' + this.lives);
 
-                if (this.lives < 1) {
+                if (this.lives <= 0) {
 
+                    this.gameOver = true;
+                    if(this.lives < 0){
+                        this.lives = 0;
+                    }
+
+                    this.player_layer.layer.remove(this.player.sprite);
+                    //  console.log('game over');
                     this.endTime = Math.floor(Date.now() / 1000);
                     this.timeCompleted = this.endTime - this.startTime;
-                        
-                    this.player_layer.layer.remove(this.player.sprite);
-                    alert('Game Over!  Played ' + this.timeCompleted + ' seconds ');
-                    //  console.log('game over');
-                    
-                    
-                   
-                    
-                    //console.log('complete for '+ this.timeCompleted + ' seconds ');
+                    //   console.log('complete for '+ this.timeCompleted + ' seconds ');
                     this.points += this.timeCompleted / 2;
                     //console.log('complete for ' + this.timeCompleted + ' seconds ');
                     //console.log('points ' + this.points);
                     this.player_layer.draw();
-                    
-                    // Reload
-                    //  if (confirm('Do you want to try again?')) {
-                    //     location.reload();
-                    // }
-                    // else{
-                    //     //sleep(10000);
-                    // }
-                
                 } else {
+                    this.points += CONSTANTS.POINTS_REMOVE_LIVE;
+                    if(this.points < 0){
+                        this.points = 0;
+                    }
                     this.player.row = 0;
                     this.player.column = 0;
                     this.player.move();
-                    this.player_layer.draw();
                     this.grid[0][0] = 'p';
+                    this.player_layer.draw();
+
                 }
             }
         });
@@ -898,6 +885,13 @@ window.onload = function () {
                     that.fires.shift();
                     that.fires.shift();
 
+                    that.kill_creatures_in_the_range(positionsOfFireUp);
+                    that.kill_creatures_in_the_range(positionsOfFireDown);
+                    that.kill_creatures_in_the_range(positionsOfFireLeft);
+                    that.kill_creatures_in_the_range(positionsOfFireRight);
+                    that.kill_creatures_in_the_range(positionOfBomb);
+
+                    that.enemies_layer.draw();
                     that.fire_layer.draw();
                     that.stone_layer.draw();
                 }, 1000);
@@ -906,22 +900,43 @@ window.onload = function () {
             }
         });
 
-        return game;
+        Object.defineProperty(game, 'kill_creatures_in_the_range', {
+            value: function (killingCoordinates) {
+                for (var i = 0; i < this.enemies.length; i += 1) {
+                    if (this.enemies[i].column == killingCoordinates[0]
+                        && this.enemies[i].row == killingCoordinates[1]) {
+                        this.enemies[i].sprite.remove();
+                        this.enemies.splice(i, 1);
+                        this.grid[killingCoordinates[1]][killingCoordinates[0]] = '=';
+                        this.points += CONSTANTS.POINTS_GAINED_ENEMY;
+                        //this.path_layer.draw();
+                    }
+                }
+
+                console.log(this.player.column==killingCoordinates[0])
+                console.log(this.player.column==killingCoordinates[1])
+
+
+                if(this.player.column==killingCoordinates[0] && this.player.row == killingCoordinates[1]){
+                    this.remove_life();
+                }
+            }
+        });
+
+        return game
 
     }(gameAssetsBuilder));
 
     function initGame() {
 
         var gameSet = [
-            ['=', 'p', '+', '+', '=','=', '+', '+', '=', '='],
-            ['+', '=', '+', '+', '=','=', '+', '+', 'e', '+'],
-            ['+', 'c', '=', '=', '=','=', '+', '+', '=', '='],
-            ['=', '=', '+', '=', 'e','=', '=', '=', '=', '+'],
-            ['c', 'c', '+', '+', '=','e', '+', '+', '=', '+'],
-            ['=', '=', '+', '+', '=','=', '+', '+', '=', '+'],
-            ['=', 'e', '+', '+', '=','=', '+', '+', '=', 'g'],
-            ['=', 'e', '+', '+', '=','=', '+', '+', '=', 'g'],
-            ['=', 'e', '+', '+', '=','=', '+', '+', '=', 'g']
+            ['=', 'p', '+', '+', '=', '+', '+', '=', '='],
+            ['+', '=', '+', '+', '=', '+', '+', 'e', '+'],
+            ['+', 'c', '=', '=', '=', '+', '+', '=', '='],
+            ['=', '=', '+', '=', 'e', '=', '=', '=', '+'],
+            ['c', 'c', '+', '+', '=', '+', '+', '=', '+'],
+            ['=', '=', '+', '+', '=', '+', '+', '=', '+'],
+            ['=', 'e', '+', '+', '=', '+', '+', '=', 'g']
         ];
 
         var newGame = game.init(gameSet);
@@ -932,13 +947,12 @@ window.onload = function () {
             canUpdareTopBar = true;
         }, 3000);
 
-        setInterval(function () {
+       var gameLoop =  setInterval(function () {
             newGame.enemy_move();
             if (canUpdareTopBar) {
                 bar.updateLives(newGame.lives);
                 bar.updateIce(newGame.points);
-                bar.updateRatioBars(game.points, game.maxLevelPoints);
-            }
+                bar.updateRatioBars(game.points, game.maxLevelPoints);            }
 
             console.log(game.enemies);
             console.log('--------------------------');
@@ -949,7 +963,19 @@ window.onload = function () {
 
             console.log('--------------------------');
 
+            if(newGame.gameOver){
+                stopGameLoop();
+                //alert('stop')
+            }
+
         }, 1000);
+
+
+        function stopGameLoop(){
+            clearInterval(gameLoop)
+        }
+
+
 
         window.onkeydown = function (ev) {
             if (ev.keyCode === 38 || ev.keyCode === 87) {
