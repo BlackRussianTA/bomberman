@@ -2,7 +2,6 @@ before(function () {
 
     this.game = game;
     this.module = module;
-    this.helpers = helpers in module;
 
 });
 
@@ -26,10 +25,5 @@ describe('Test for module', function(){
     });
 });
 
-describe('Test for module', function(){
-    it('test for module to exist', function(){
-        chai.assert.typeOf(helpers, 'object')
-    });
-});
 
 
