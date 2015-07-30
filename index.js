@@ -326,7 +326,7 @@ function game() {
                         helpers.buildGrid(this, grid);
                         // wait the images to be loaded
                         // and then add the layers to the stage
-                        that.stage.add(that.gate_layer);
+                       
                         setTimeout(function () {
                             that.stage.add(that.path_layer);
                         }, 60);
@@ -348,6 +348,10 @@ function game() {
                         }, 60);
                         setTimeout(function () {
                             that.stage.add(that.coin_layer);
+                        }, 60);
+                        
+                           setTimeout(function () {
+                             that.stage.add(that.gate_layer);
                         }, 60);
 
 
