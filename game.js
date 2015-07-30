@@ -13,7 +13,7 @@ window.onload = function () {
             POINTS_GAINED_ENEMY: 50,
             POINTS_GAINED_COINS: 50,
             POINTS_GAINED_GATE: 100,
-            POINTS_REMOVE_LIVE: -100
+            POINTS_REMOVE_LIVE: -100,
         },
         sprites = {
             player: animationPlayer,
@@ -23,7 +23,7 @@ window.onload = function () {
             brick: {brick: animationBox.brick},
             gate: animationGate,
             ice: animationIce,
-            empty: animationEmpty,
+            empty: [],
             background: animationBackground,
             fire: animationFire,
             coin: animationCoin,
@@ -680,11 +680,11 @@ var game = (function (gameAssetsBuilder) {
 
             self.stage.add(self.path_layer.layer);
             self.stage.add(self.gate_layer.layer);
-            self.stage.add(self.fire_layer.layer);
             self.stage.add(self.player_layer.layer);
             self.stage.add(self.enemies_layer.layer);
             self.stage.add(self.bomb_layer.layer);
             self.stage.add(self.coin_layer.layer);
+            self.stage.add(self.fire_layer.layer);
             self.stage.add(self.stone_layer.layer);
 
 
