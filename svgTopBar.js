@@ -7,7 +7,8 @@ var topBarSVG = (function () {
             BORDER_RADIUS: 8,
             PLAYER_ALIVE_IMAGE_PATH: 'media/player.png',
             PLAYER_DEAD_IMAGE_PATH: 'media/playerDead.png',
-            ICE_CUBE_IMAGE_PATH: 'media/ice.png'
+            ICE_CUBE_IMAGE_PATH: 'media/ice.png',
+            ANIMATIONS_TIMEOUT: 300
         },
         topBarSVG = Object.create({});
 
@@ -38,7 +39,7 @@ var topBarSVG = (function () {
                 opacity: 0
             }).animate({
                 opacity: 0.2
-            }, 1000);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT);
     }
 
     function calculatePartWidth(persantage, dimentions) {
@@ -96,9 +97,9 @@ var topBarSVG = (function () {
         setTimeout(function () {
             percentageSymbol.animate({
                     opacity: 0.8
-                }, 1000
+                }, CONSTANTS.ANIMATIONS_TIMEOUT
             );
-        }, 1200);
+        }, CONSTANTS.ANIMATIONS_TIMEOUT * 1.2);
 
         return {
             icePointsBar: icePointsBar,
@@ -130,7 +131,7 @@ var topBarSVG = (function () {
             })
             .animate({
                 opacity: 0.7
-            }, 1200);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT * 1.2);
 
         firePointsRect = paper.rect(firePointsX, firePointsY, initialHeightAndWidth, initialHeightAndWidth, CONSTANTS.BORDER_RADIUS)
             .attr({
@@ -141,7 +142,7 @@ var topBarSVG = (function () {
             .animate({
                 width: initialHeightAndWidth,
                 opacity: 0.7
-            }, 1200);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT * 1.2);
 
         // TODO: calculate font size automatically
         icePointsText = paper.text(iceTextX, iceTextY, '50')
@@ -154,9 +155,8 @@ var topBarSVG = (function () {
         setTimeout(function () {
             icePointsText.animate({
                     opacity: 1
-                }, 1000
-            );
-        }, 1200);
+                }, CONSTANTS.ANIMATIONS_TIMEOUT);
+        }, CONSTANTS.ANIMATIONS_TIMEOUT * 1.2);
 
         // TODO: calculate font size automatically
         firePointsText = paper.text(fireTextX, fireTextY, '50')
@@ -169,9 +169,9 @@ var topBarSVG = (function () {
         setTimeout(function () {
             firePointsText.animate({
                     opacity: 1
-                }, 1000
+                }, CONSTANTS.ANIMATIONS_TIMEOUT
             );
-        }, 1200);
+        }, CONSTANTS.ANIMATIONS_TIMEOUT * 1.2);
 
         // TODO: return object!!!
 
@@ -210,13 +210,13 @@ var topBarSVG = (function () {
         setTimeout(function () {
             iceCubeImage.animate({
                 opacity: 0.8
-            }, 1000);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT);
 
             iceCubeCountText.animate({
                     opacity: 0.9
-                }, 1000
+                }, CONSTANTS.ANIMATIONS_TIMEOUT
             );
-        }, 2400);
+        }, CONSTANTS.ANIMATIONS_TIMEOUT * 2.4);
 
         return {
             iceCubeImage: iceCubeImage,
@@ -252,13 +252,13 @@ var topBarSVG = (function () {
         setTimeout(function () {
             playerImage.animate({
                 opacity: 0.8
-            }, 1000);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT);
 
             playerLivesCountText.animate({
                     opacity: 0.9
-                }, 1000
+                }, CONSTANTS.ANIMATIONS_TIMEOUT
             );
-        }, 2400);
+        }, CONSTANTS.ANIMATIONS_TIMEOUT * 2.4);
 
         return {
             playerImage: playerImage,
@@ -344,16 +344,16 @@ var topBarSVG = (function () {
 
             self._iceAndFireRatioBars.icePointsBar.animate({
                 width: icePartWidth
-            }, 1000);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT);
 
             self._iceAndFireRatioBars.percentageSymbol.animate({
                 x: icePartWidth + self._dimensions.iceVsFireBarX
-            }, 1000);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT);
 
             self._iceAndFireRatioBars.firePointsBar.animate({
                 x: calculateFireBarX(restParts, self._dimensions),
                 width: firePartWidth
-            }, 1000);
+            }, CONSTANTS.ANIMATIONS_TIMEOUT);
 
             self._iceAndFIreRectsAndPercentage.icePointsText.attr({
                 text: Math.round(currentPointsParts * 100)
