@@ -765,10 +765,13 @@ window.onload = function () {
         Object.defineProperty(game, 'remove_life', {
 
             value: function () {
-                this.lives -= 1;
+                if (this.lives > 0) {
+                    this.lives -= 1;
+                }
+                
                 //  console.log('remaining lives: ' + this.lives);
 
-                if (this.lives < 0) {
+                if (this.lives < 1) {
 
                     this.endTime = Math.floor(Date.now() / 1000);
                     this.timeCompleted = this.endTime - this.startTime;
