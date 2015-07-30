@@ -1,0 +1,9 @@
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\bin\Debug\Model.dll.config
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\bin\Debug\Model.dll
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\bin\Debug\Model.pdb
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\bin\Debug\EntityFramework.dll
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\bin\Debug\EntityFramework.xml
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\obj\Debug\Model.dll
+C:\Users\Antoan Elenkov\Documents\Visual Studio 2013\Projects\Telerik TeamWork Team Projects\bomberman\Heat.Revenge\Model\obj\Debug\Model.pdb

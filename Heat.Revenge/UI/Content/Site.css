@@ -1,7 +1,15 @@
-﻿/* Move down content because we have a fixed navbar that is 50px tall */
+﻿@font-face {
+    font-family: iceCream;
+    src: url('fonts/IceCream.eot');
+    src: url('fonts/IceCream.eot?#iefix') format('embedded-opentype'), url('fonts/IceCream.woff2') format('woff2'), url('fonts/IceCream.woff') format('woff'), url('fonts/IceCream.ttf') format('truetype');
+}
+
+/* Move down content because we have a fixed navbar that is 50px tall */
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    background-color:#f2ebeb;
+    font-family:iceCream;
 }
 
 /* Wrapping element */
@@ -19,7 +27,7 @@ textarea {
 }
 
 .h2{
-    background-color:#aaebd7;
+    background-color:#cab8b8;
 }
 
 #canvasContainer{

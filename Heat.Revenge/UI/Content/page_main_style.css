@@ -1,0 +1,70 @@
+@font-face {
+    font-family: iceCream;
+    src: url('fonts/IceCream.eot');
+    src: url('fonts/IceCream.eot?#iefix') format('embedded-opentype'), url('fonts/IceCream.woff2') format('woff2'), url('fonts/IceCream.woff') format('woff'), url('fonts/IceCream.ttf') format('truetype');
+}
+
+body, div, canvas, button, input {
+    font-family: iceCream;
+    font-size: 20px;
+    color: black;
+}
+
+body {
+    text-align: center;
+    background-color: #dedbdb;
+}
+
+#wrapper {
+    display: inline-block;
+    margin: 50px autopad;
+}
+
+#canvasContainer {
+    margin: 10px;
+}
+
+.rating {
+    font-size: 25px;
+}
+
+.radioList {
+    margin-left: 10px;
+}
+
+.nav, .navbar-brand {
+    font-size: 40px;
+}
+
+.mainHeadings {
+    background-color: #988d8d;
+    font-family: iceCream;
+    font-size: 40px;
+    text-align: center;
+}
+
+#div_add {
+    border: 1px solid #ebebeb;
+    padding: 5px;
+}
+
+#highScore {
+    margin-top: 50px;
+}
+
+.comments {
+    background-color: #988d8d;
+    font-family: iceCream;
+}
+
+.badge {
+    font-size: 20px;
+}
+
+.form-control {
+    font-size: 20px;
+}
+
+.btn {
+    font-size: 25px;
+}

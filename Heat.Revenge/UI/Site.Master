@@ -7,28 +7,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%: Page.Title %> - Heat Escape</title>
-    <link rel="stylesheet" href="styles/page_main_style.css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="scripts/bower_components/kineticjs/kinetic.min.js"></script>
     <script src="scripts/canvas_animations_scripts/introSpriteCoordinates.js"></script>
     <script src="scripts/canvas_animations_scripts/intro_animation.js"></script>
-    <script type="text/javascript" src="jquery-2.1.4.js"></script>
+    <script src="scripts/raphael.js"></script>
+    <script type="text/javascript" src="Scripts/spriteFramesAndAnimationSequence.js"></script>
     <script type="text/javascript" src="bower_components/kineticjs/kinetic.js"></script>
-    <script type="text/javascript" src="spriteFramesAndAnimationSequence.js"></script>
-    <script src="raphael.js"></script>
-     <style>
-        canvas {
-            border: 1px solid black !important;
-            background: #D0F4F7;
-        }
-    </style>
-<link href="startScreen.css" rel="stylesheet">
-    <link href="styles/Rating_style.css" rel="stylesheet" />
+
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/bundles/modernizr") %>
     </asp:PlaceHolder>
-
     <webopt:BundleReference runat="server" Path="~/Content/css" />
+
+    <link href="Content/startScreen.css" rel="stylesheet">
+    <link href="Content/page_main_style.css" rel="stylesheet" />
+
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
 </head>

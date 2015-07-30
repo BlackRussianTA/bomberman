@@ -38,7 +38,7 @@
                 </p>
                 <p>
                     <span class="span">Username</span><br>
-                    <input type="text" name="userName" ID="input_user" class="input"/>
+                    <input type="text" name="userName" id="input_user" class="input" />
                 </p>
                 <p>
                     <button id="btn_newGame" class="button">Start new game</button>
@@ -51,10 +51,6 @@
         <div id="svg-container"></div>
         <div id="kinetic-canvas"></div>
     </div>
-
-    <script type="text/javascript" src="game.js"></script>
-    <script src="svgTopBar.js"></script>
-    <script src="menu.js"></script>
 
     <hr />
 
@@ -79,9 +75,10 @@
         </asp:UpdatePanel>
     </div>
 
+    <hr />
+
     <div class="row">
         <div class="col-md-6">
-
             <asp:UpdatePanel runat="server">
                 <ContentTemplate>
                     <p>
@@ -105,18 +102,17 @@
                     </p>
 
                     <div class="row">
-                        <h2 style="background-color: #aaebd7; text-align: center">Comments</h2>
+                        <h2 class="mainHeadings">Comments</h2>
                     </div>
 
                     <p>
                         <div class="row">
-                            <asp:Button runat="server" ID="Btn_addComment" Text="Add Comment" OnClick="Btn_addComment_Click" CssClass="btn btn-primary" Visible="true" />
+                            <asp:Button runat="server" ID="Btn_addComment" Text="Add Comment" OnClick="Btn_addComment_Click" CssClass="btn btn-primary btn-lg" Visible="true" />
                         </div>
                     </p>
 
-                    <div class="row" runat="server" id="div_add"
-                        style="border: 1px solid #ebebeb; padding: 5px" visible="false">
-                        <h3 style="background-color: #aaebd7">Add New Comment</h3>
+                    <div class="row" runat="server" id="div_add" visible="false">
+                        <h3 class="mainHeadings">Add New Comment</h3>
                         <div class="container">
                             <p>
                                 <div class="row">
@@ -153,8 +149,8 @@
                         </div>
 
                         <p>
-                            <asp:Button runat="server" ID="Btn_Add" Text="Add" CssClass="btn btn-success" OnClick="Btn_Add_Click" />
-                            <asp:Button runat="server" ID="Btn_Cancel" Text="Cancel" CssClass="btn btn-danger" OnClick="Btn_Cancel_Click" />
+                            <asp:Button runat="server" ID="Btn_Add" Text="Add" CssClass="btn btn-success btn-lg" OnClick="Btn_Add_Click" />
+                            <asp:Button runat="server" ID="Btn_Cancel" Text="Cancel" CssClass="btn btn-danger btn-lg" OnClick="Btn_Cancel_Click" />
                         </p>
                     </div>
 
@@ -170,7 +166,7 @@
                                 <p>
                                     "<%#:Item.Text %>"
                                 </p>
-                                <p style="background-color: #aaebd7;">
+                                <p class="comments">
                                     by: "<i><%#: Item.Owner %></i>" created on: <%#: Item.DateCreated %>
                                 </p>
                             </ItemTemplate>
@@ -189,7 +185,7 @@
 
         <div class="col-md-5">
             <div class="row">
-                <h2 style="background-color: #aaebd7; text-align: center">High Score</h2>
+                <h2 id="highScore" class="mainHeadings">High Score</h2>
             </div>
             <asp:UpdatePanel runat="server">
                 <ContentTemplate>
@@ -212,5 +208,10 @@
             </asp:UpdatePanel>
         </div>
     </div>
+
     <script src="Scripts/load_initial.js"></script>
+    <script type="text/javascript" src="Scripts/game.js"></script>
+    <script src="Scripts/svgTopBar.js"></script>
+    <script src="Scripts/menu.js"></script>
+
 </asp:Content>

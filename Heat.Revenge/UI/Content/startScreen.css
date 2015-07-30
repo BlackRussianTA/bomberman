@@ -1,0 +1,80 @@
+@font-face {
+    font-family: iceCream;
+    src: url('fonts/fonts/IceCream.eot');
+    src: url('fonts/fonts/IceCream.eot?#iefix') format('embedded-opentype'), url('fonts/fonts/IceCream.woff2') format('woff2'), url('fonts/fonts/IceCream.woff') format('woff'), url('fonts/fonts/IceCream.ttf') format('truetype');
+}
+
+#gameContainer {
+    margin-left: 150px;
+}
+
+#startScreen, #howToPlayScreen, #aboutScreen, #endScreen {
+    border: 1px solid black;
+}
+
+h1.h1, button.button, p.p, ul.ul, span.span, legend {
+    font-family: iceCream;
+    font-size: 40px;
+    text-align: center;
+}
+
+button.button {
+    margin-left: 5px;
+}
+
+p.p, ul.ul {
+    margin: 10px;
+    padding: 0;
+}
+
+h1.h1 {
+    margin: 50px;
+    padding: 50px;
+    padding-top: 100px;
+}
+
+li.li {
+    list-style-type: none;
+}
+
+.back {
+    margin-left: 430px;
+    font-size: 40px;
+}
+
+input.input {
+    width: 520px;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+    input.input[type='text'] {
+        font-size: 40px;
+        font-family: iceCream;
+    }
+
+span.span {
+    padding: 150px;
+}
+
+legend.legend {
+    margin-top: 60px;
+    padding-top: 50px;
+}
+
+.hidden {
+    display: none;
+}
+
+.h1 {
+    font-size: 40px;
+}
+
+canvas {
+    border: 1px solid black !important;
+    background: #D0F4F7;
+}
+
+h1{
+    font-family: iceCream;
+}
