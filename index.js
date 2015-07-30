@@ -552,6 +552,10 @@ function game() {
                                 //this.path_layer.draw();
                             }
                         }
+
+                        if(this.player.column==killingCoordinates[0] && this.player.row == killingCoordinates[1]){
+                            this.remove_life();
+                        }
                     }
                 });
 
