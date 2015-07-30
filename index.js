@@ -1,3 +1,8 @@
+var privateUnitWrapper = {};
+function attachModuleToWrapper(mod, modName) {
+    privateUnitWrapper[modName] = mod;
+};
+
 function game() {
     var module = (function () {
             var player,
@@ -170,6 +175,7 @@ function game() {
                     return cur;
                 }
             };
+        attachModuleToWrapper(helpers, 'helpers');
             player = (function () {
                 player = Object.create({});
 
@@ -183,6 +189,7 @@ function game() {
                 });
                 return player;
             }());
+        attachModuleToWrapper(player, 'player');
             enemy = (function () {
                 enemy = Object.create({});
 
@@ -212,6 +219,7 @@ function game() {
                 });
                 return enemy;
             }());
+        attachModuleToWrapper(enemy, 'enemy');
             gate = (function () {
                 gate = Object.create({});
                 Object.defineProperty(gate, 'init', {
@@ -225,6 +233,7 @@ function game() {
                 });
                 return gate;
             }());
+        attachModuleToWrapper(gate, 'gate');
             stone = (function () {
                 var currentId = 0,
                     stone = Object.create({});
@@ -239,6 +248,7 @@ function game() {
                 });
                 return stone;
             }());
+        attachModuleToWrapper(stone, 'stone');
             coin = (function () {
                 var currentId = 0,
                     coin = Object.create({});
@@ -253,6 +263,7 @@ function game() {
                 });
                 return coin;
             }());
+        attachModuleToWrapper(coin, 'coin');
             bomb = (function () {
                 var currentId = 0,
                     bomb = Object.create({});
@@ -267,6 +278,7 @@ function game() {
                 });
                 return bomb;
             }());
+        attachModuleToWrapper(bomb, 'bomb');
             fire = (function () {
                 var currentId = 0,
                     fire = Object.create({});
@@ -281,6 +293,7 @@ function game() {
                 });
                 return fire;
             }());
+        attachModuleToWrapper(fire, 'fire');
             game = (function () {
                 game = Object.create({});
 
@@ -527,6 +540,7 @@ function game() {
 
                 return game;
             })();
+        attachModuleToWrapper(game, 'game');
 
             return {
                 getGame: function (grid) {
