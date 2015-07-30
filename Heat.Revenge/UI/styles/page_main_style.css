@@ -1,0 +1,34 @@
+@font-face {
+    font-family: iceCream;
+    src: url('fonts/IceCream.eot');
+    src: url('fonts/IceCream.eot?#iefix') format('embedded-opentype'), url('fonts/IceCream.woff2') format('woff2'), url('fonts/IceCream.woff') format('woff'), url('fonts/IceCream.ttf') format('truetype');
+}
+
+body, div, canvas, button, input {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    text-align: center;
+    font-family: iceCream;
+    background-color: rgba(255, 255, 170, 1);
+    background-image: url("../images/body-background.jpg");
+}
+
+#wrapper {
+    display: inline-block;
+    margin: 50px autopad;
+}
+
+#canvasContainer {
+    margin: 10px;
+}
+
+.rating {
+    font-size: 25px;
+}
+
+.radioList {
+    margin-left: 10px;
+}

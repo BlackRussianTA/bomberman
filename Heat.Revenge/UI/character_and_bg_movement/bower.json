@@ -1,0 +1,19 @@
+{
+  "name": "canvas-game",
+  "version": "0.0.0",
+  "authors": [
+    "ChrisChrisi <chris1cros@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "kineticjs": "~5.1.0",
+    "requirejs": "~2.1.19"
+  }
+}
