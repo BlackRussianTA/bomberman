@@ -27,6 +27,7 @@
                     <li class="li">A for LEFT</li>
                     <li class="li">D for RIGHT</li>
                     <li class="li">S for DOWN</li>
+                    <li class="li">B for BOMB</li>
                 </ul>
                 <button type="button" class="back button" id="btn_backFromHowToPlay">Back</button>
             </div>
@@ -126,7 +127,7 @@
                                             MaxLength="500"
                                             TextMode="MultiLine"
                                             Rows="5"
-                                            Width="600"
+                                            Width="400"
                                             CssClass="form-control"></asp:TextBox>
                                     </div>
                                 </div>
@@ -141,7 +142,7 @@
                                             ID="textbox_owner"
                                             placeholder="Enter you name here..."
                                             MaxLength="100"
-                                            Width="600"
+                                            Width="400"
                                             CssClass="form-control"></asp:TextBox>
                                     </div>
                                 </div>
@@ -155,7 +156,7 @@
                     </div>
 
                     <hr />
-                    <h3>Latest comments</h3>
+                    <p class="mainHeadings">Latest comments</p>
                     <hr />
                     <div class="row">
                         <asp:ListView runat="server"
@@ -209,9 +210,9 @@
         </div>
     </div>
 
-    <script src="Scripts/load_initial.js"></script>
-    <script type="text/javascript" src="Scripts/game.js"></script>
-    <script src="Scripts/svgTopBar.js"></script>
-    <script src="Scripts/menu.js"></script>
-
+    <script src="Scripts/MyScripts/load_animation.js"></script>
+    <script src="Scripts/MyScripts/menu.js"></script>
+    <script src="Scripts/MyScripts/game.js"></script>
+    <script src="Scripts/MyScripts/svgTopBar.js"></script>
+    
 </asp:Content>

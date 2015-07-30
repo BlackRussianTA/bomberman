@@ -12,7 +12,7 @@
     <script src="scripts/canvas_animations_scripts/introSpriteCoordinates.js"></script>
     <script src="scripts/canvas_animations_scripts/intro_animation.js"></script>
     <script src="scripts/raphael.js"></script>
-    <script type="text/javascript" src="Scripts/spriteFramesAndAnimationSequence.js"></script>
+    <script type="text/javascript" src="Scripts/MyScripts/spriteFramesAndAnimationSequence.js"></script>
     <script type="text/javascript" src="bower_components/kineticjs/kinetic.js"></script>
 
     <asp:PlaceHolder runat="server">
@@ -21,7 +21,7 @@
     <webopt:BundleReference runat="server" Path="~/Content/css" />
 
     <link href="Content/startScreen.css" rel="stylesheet">
-    <link href="Content/page_main_style.css" rel="stylesheet" />
+    <link href="Content/mainPage.css" rel="stylesheet" />
 
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 

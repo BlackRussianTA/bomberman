@@ -1,17 +1,24 @@
 ﻿<%@ Page Title="Contact" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Contact.aspx.cs" Inherits="UI.Contact" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <h2><%: Title %>.</h2>
-    <h3>Your contact page.</h3>
-    <address>
-        One Microsoft Way<br />
-        Redmond, WA 98052-6399<br />
-        <abbr title="Phone">P:</abbr>
-        425.555.0100
-    </address>
+    <style>
+        @font-face {
+            font-family: iceCream;
+            src: url('fonts/IceCream.eot');
+            src: url('fonts/IceCream.eot?#iefix') format('embedded-opentype'), url('fonts/IceCream.woff2') format('woff2'), url('fonts/IceCream.woff') format('woff'), url('fonts/IceCream.ttf') format('truetype');
+        }
 
+        a {
+            font-family: iceCream;
+        }
+    </style>
+    <h2><%: Title %>.</h2>
+    <h3><a href="https://github.com/IvoPaunov">IvoPaunov</a></h3>
+    <h3><a href="https://github.com/V3ronique">V3ronique</a></h3>
+    <h3><a href="https://github.com/ChrisChrisi">ChrisChrisi</a></h3>
+    <h3><a href="https://github.com/PenkoValchev">PenkoValchev</a></h3>
+    <br />
     <address>
-        <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-        <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
+        Telerik Academy<br />
     </address>
 </asp:Content>
