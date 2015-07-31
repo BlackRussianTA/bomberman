@@ -16,7 +16,7 @@
     <h3><a href="https://github.com/IvoPaunov">IvoPaunov</a></h3>
     <h3><a href="https://github.com/V3ronique">V3ronique</a></h3>
     <h3><a href="https://github.com/ChrisChrisi">ChrisChrisi</a></h3>
-    <h3><a href="https://github.com/PenkoValchev">PenkoValchev</a></h3>
+    <h3><a href="https://github.com/antoanelenkov">antoanelenkov</a></h3>
     <br />
     <address>
         Telerik Academy<br />
