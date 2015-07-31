@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - Heat Escape</title>
+    <title><%: Page.Title %> - Heat Revenge</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="scripts/bower_components/kineticjs/kinetic.min.js"></script>
     <script src="scripts/canvas_animations_scripts/introSpriteCoordinates.js"></script>

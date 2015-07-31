@@ -78,3 +78,8 @@ canvas {
 h1{
     font-family: iceCream;
 }
+
+#ancher_about{
+    text-decoration:none;
+    color:black;
+}

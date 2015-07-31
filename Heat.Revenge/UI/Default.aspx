@@ -12,7 +12,7 @@
                 <h1 class="h1">Heat Revenge</h1>
                 <button type="button" id="btn_start" class="button">Start</button>
                 <button type='button' id="btn_howToPlay" class="button">How To Play</button>
-                <button type='button' id="btn_about" class="button">About</button>
+                <button type='button' id="btn_about" class="button"><a href="About.aspx" id="ancher_about">About</a></button>
             </div>
 
             <div id="aboutScreen" class="hidden">
@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-md-2">
                     <p class="row rating">
-                        RATING: <%#: String.Format("{0:0.00}",this.rating )%>
+                        RATING: <span id="span_score"><%#: String.Format("{0:0.00}",this.rating )%></span>
                 </div>
                 <div class="col-md-2"></div>
             </ContentTemplate>

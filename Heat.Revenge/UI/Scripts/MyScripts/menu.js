@@ -1,9 +1,10 @@
 var menu = (function () {
+    var CONSTANTS = {
+        MENU_WIDTH:800,
+        MENU_HEIGHT:500
+    };
 
-    var points;
-    var user;
-
-    (function myFunction() {
+    (function activateTimeOut() {
         setTimeout(function () {
             stopAnimation();
 
@@ -13,17 +14,17 @@ var menu = (function () {
 
 
     (function initScreen() {
-        $("#startScreen").css('width', '800px');
-        $("#startScreen").css('height', '500px');
+        $("#startScreen").css('width', CONSTANTS.MENU_WIDTH);
+        $("#startScreen").css('height', CONSTANTS.MENU_HEIGHT);
 
-        $("#howToPlayScreen").css('width', '800px');
-        $("#howToPlayScreen").css('height', '500px');
+        $("#howToPlayScreen").css('width', CONSTANTS.MENU_WIDTH);
+        $("#howToPlayScreen").css('height', CONSTANTS.MENU_HEIGHT);
 
-        $("#endScreen").css('width', '800px');
-        $("#endScreen").css('height', '500px');
+        $("#endScreen").css('width', CONSTANTS.MENU_WIDTH);
+        $("#endScreen").css('height', CONSTANTS.MENU_HEIGHT);
 
-        $("#aboutScreen").css('width', '800px');
-        $("#aboutScreen").css('height', '500px');
+        $("#aboutScreen").css('width', CONSTANTS.MENU_WIDTH);
+        $("#aboutScreen").css('height', CONSTANTS.MENU_HEIGHT);
     })();
 
     function stopAnimation() {
@@ -46,8 +47,9 @@ var menu = (function () {
     }
 
     function showAbout() {
-        $("#startScreen").toggleClass('hidden');
-        $("#aboutScreen").toggleClass('hidden');
+        //$("#startScreen").toggleClass('hidden');
+       window.location.href
+        //$("#aboutScreen").toggleClass('hidden');
     }
 
     function showFinalScreen() {

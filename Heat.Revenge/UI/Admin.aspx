@@ -1,6 +1,10 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Admin.aspx.cs" Inherits="UI.Delete" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+
+    <hr />
+    <hr />
+
     <asp:UpdatePanel runat="server">
         <ContentTemplate>
             <asp:GridView
@@ -19,7 +23,9 @@
                     <asp:CommandField ShowDeleteButton="true" HeaderText="Delete" />
                 </Columns>
             </asp:GridView>
+
             <hr />
+
              <asp:GridView
                 runat="server"
                 ID="Grid_HighScore"
